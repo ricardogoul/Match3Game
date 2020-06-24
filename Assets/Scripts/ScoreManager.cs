@@ -29,11 +29,6 @@ namespace Match3.UI
 
         [SerializeField]
         private Image _scoreBar;
-        //[SerializeField]
-        //private Image _timerBar;        
-
-        //[SerializeField]
-        //private Animator _anim;
 
         private bool _scoreBarFull;
 
@@ -53,11 +48,6 @@ namespace Match3.UI
             {
                 _scoreBarFull = true;
             }
-
-            //if (_scoreBarFull)
-            //{
-            //    _anim.SetBool("GoalReached", true);
-            //}
 
             if (!_scoreBarFull)
             {

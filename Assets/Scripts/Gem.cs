@@ -13,15 +13,11 @@ namespace Match3.Piece
         private Vector2 _swipeDirection;
         private Vector2 _auxPos;
 
-        [SerializeField]
         private int _row;
-        [SerializeField]
         private int _column;
         private int _currentRow; // Y
         private int _currentCol; // X        
-        [SerializeField]
         private int _previousRow;
-        [SerializeField]
         private int _previousCol;
 
         [Tooltip("Amont of seconds to wait before going back to last position when switched.")]
@@ -31,10 +27,8 @@ namespace Match3.Piece
         [SerializeField]
         private float _waitSecondsToMove;
 
-        [SerializeField]
         private bool _hasMatch;
 
-        [SerializeField]
         private GameObject _swapedGem;
 
         private GridGenerator _gridGenerator;
@@ -46,13 +40,6 @@ namespace Match3.Piece
             _gridGenerator = GetComponentInParent<GridGenerator>();
             _findMatches = GetComponentInParent<FindMatches>();
             _soundManager = FindObjectOfType<SoundManager>();
-
-            //_currentCol = (int)transform.position.x;
-            //_currentRow = (int)transform.position.y * -1;
-            //_row = _currentRow;
-            //_column = _currentCol;
-            //_previousRow = _row;
-            //_previousCol = _column;
         }
 
         void Update()
@@ -65,8 +52,6 @@ namespace Match3.Piece
         {
             MoveSpriteHorizontally();
             MoveSpriteVertically();
-            //FindMatchesHorizontally();
-            //FindMatchesVertically();
 
             if (_hasMatch)
             {
@@ -106,12 +91,10 @@ namespace Match3.Piece
                 {
                     if (_swipeDirection.x > 0 && _column < _gridGenerator.Width - 1)
                     {
-                        //Debug.Log("right");
                         MoveRight();
                     }
                     else if (_swipeDirection.x < 0 && _column > 0)
                     {
-                        //Debug.Log("left");
                         MoveLeft();
                     }                    
                 }
@@ -119,12 +102,10 @@ namespace Match3.Piece
                 {
                     if (_swipeDirection.y > 0.4 && _row > 0)
                     {
-                        //Debug.Log("up");
                         MoveUp();
                     }
                     if (_swipeDirection.y < 0.4 && _row < _gridGenerator.Height - 1)
                     {
-                        //Debug.Log("down");
                         MoveDown();
                     }                    
                 }
@@ -141,8 +122,6 @@ namespace Match3.Piece
         private void MoveRight()
         {
             _swapedGem = _gridGenerator.GemsGrid[_row, _column + 1];
-            //_previousRow = _row;
-            //_previousCol = _column;
             _swapedGem.GetComponent<Gem>()._column -= 1;
             _column += 1;
         }
@@ -150,8 +129,6 @@ namespace Match3.Piece
         private void MoveLeft()
         {
             _swapedGem = _gridGenerator.GemsGrid[_row, _column - 1];
-            //_previousRow = _row;
-            //_previousCol = _column;
             _swapedGem.GetComponent<Gem>()._column += 1;
             _column -= 1;
         }
@@ -159,8 +136,6 @@ namespace Match3.Piece
         private void MoveUp()
         {
             _swapedGem = _gridGenerator.GemsGrid[_row - 1, _column];
-            //_previousRow = _row;
-            //_previousCol = _column;
             _swapedGem.GetComponent<Gem>()._row += 1;
             _row -= 1;
         }
@@ -168,8 +143,6 @@ namespace Match3.Piece
         private void MoveDown()
         {
             _swapedGem = _gridGenerator.GemsGrid[_row + 1, _column];
-            //_previousRow = _row;
-            //_previousCol = _column;
             _swapedGem.GetComponent<Gem>()._row -= 1;
             _row += 1;
         }
@@ -216,59 +189,6 @@ namespace Match3.Piece
             }
         }
 
-        //private void FindMatchesHorizontally()
-        //{
-        //    if(_column > 0 && _column < _gridGenerator.Width - 1)
-        //    {
-        //        GameObject leftGem = _gridGenerator.GemsGrid[_row, _column - 1];
-        //        GameObject rightGem = _gridGenerator.GemsGrid[_row, _column + 1];
-
-        //        CompareGems(leftGem, rightGem);
-
-        //        //if (_swapedGem != null)
-        //        //{
-        //        //    if (_hasMatch || _swapedGem.GetComponent<Gem>()._hasMatch)
-        //        //    {
-        //        //        _swapedGem.GetComponent<Gem>()._previousCol = _swapedGem.GetComponent<Gem>()._column;
-        //        //        _previousCol = _column;
-        //        //    }
-        //        //}
-        //    }
-        //}
-
-        //private void FindMatchesVertically()
-        //{
-        //    if (_row > 0 && _row < _gridGenerator.Height - 1)
-        //    {
-        //        GameObject upGem = _gridGenerator.GemsGrid[_row - 1, _column];
-        //        GameObject downGem = _gridGenerator.GemsGrid[_row + 1, _column];
-
-        //        CompareGems(upGem, downGem);
-
-        //        //if (_swapedGem != null)
-        //        //{
-        //        //    if (_hasMatch || _swapedGem.GetComponent<Gem>()._hasMatch)
-        //        //    {
-        //        //        _swapedGem.GetComponent<Gem>()._previousRow = _swapedGem.GetComponent<Gem>()._row;
-        //        //        _previousRow = _row;
-        //        //    }
-        //        //}
-        //    }
-        //}
-
-        //private void CompareGems(GameObject gem1, GameObject gem2)
-        //{
-        //    if (gameObject != null && gem1 != null && gem2 != null)
-        //    {
-        //        if (gem1.CompareTag(gameObject.tag) && gem2.CompareTag(gameObject.tag))
-        //        {
-        //            gem1.GetComponent<Gem>()._hasMatch = true;
-        //            gem2.GetComponent<Gem>()._hasMatch = true;
-        //            _hasMatch = true;
-        //        }
-        //    }
-        //}
-
         private IEnumerator ReturnPos()
         {
             yield return new WaitForSeconds(_waitSeconds);
@@ -306,7 +226,6 @@ namespace Match3.Piece
             {
                 _gridGenerator.CurrentState = GridGenerator.GameState.move;
             }
-
         }        
 
         public bool HasMatch

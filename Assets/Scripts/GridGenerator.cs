@@ -30,16 +30,10 @@ namespace Match3.Grid
         [Tooltip("Amont of seconds to wait before destroying particle system.")]
         [SerializeField]
         private float _explosionEffectTimer;
-
-        //private bool _checkRoundFinished;
-
-        //[SerializeField]
-        //private GameObject _gemPrefab;        
-        //private GameObject[,] _tileGrid;        
+        
         [Tooltip("Put all gems prefab in here.")]
         [SerializeField]
         private GameObject[] _gems;
-        [SerializeField]
         private GameObject[,] _gemsGrid;
         [SerializeField]
         private GameObject _explosionEffect;
@@ -50,51 +44,35 @@ namespace Match3.Grid
 
         private SoundManager _soundManager;
         private ScoreManager _scoreManager;
+        private FindMatches _findMatches;
 
-        [SerializeField]
         private GameState _currentState;
 
         void Start()
         {
             _scoreManager = GetComponentInChildren<ScoreManager>();
             _soundManager = GetComponentInChildren<SoundManager>();
+            _findMatches = GetComponent<FindMatches>();
 
             _soundManager.PlayBackgroundMusic();
 
-            //_tileGrid = new GameObject[_height, _width];
             _gemsGrid = new GameObject[_height, _width];
 
             BuildGrid();
             _currentState = GameState.cantMove;
-    }
-
-        private void FixedUpdate()
-        {
-            //if (_scoreManager.RemainingTime <= 0 && _checkRoundFinished)
-            //{
-            //    _checkRoundFinished = true;
-            //    RoundFinished();
-            //}
-
-            //if (_scoreManager.ScoreGoalReached && !_checkRoundFinished)
-            //{
-            //    _checkRoundFinished = true;
-            //    RoundFinished();
-            //    RoundCleared();
-            //}
         }
 
         private void BuildGrid()
         {
-            for (int i = 0; i > (_height*-1); i--)
+            for (int i = 0; i < _height; i++)
             {
                 for(int j = 0; j < _width; j++)
                 {
-                    Vector2 auxPos = new Vector2(j, i + offset);
+                    Vector2 auxPos = new Vector2(j, (i*-1) + offset);
                     int gemNumber = Random.Range(0, _gems.Length);
                     int iterations = 0;
                         
-                    while (CheckForMatches(j, i*-1, _gems[gemNumber]) && iterations < 50)
+                    while (CheckForMatches(j, i, _gems[gemNumber]) && iterations < 50)
                     {
                         gemNumber = Random.Range(0, _gems.Length);
                         iterations++;
@@ -102,69 +80,43 @@ namespace Match3.Grid
                     iterations = 0;
 
                     GameObject gem = Instantiate(_gems[gemNumber], auxPos, Quaternion.identity, _grid);
-                    gem.GetComponent<Gem>().Row = i * -1;
+                    gem.GetComponent<Gem>().Row = i;
                     gem.GetComponent<Gem>().Column = j;
 
-                    //GameObject gem = Instantiate(_gems[gemNumber], new Vector3(j, i, 0), Quaternion.identity, _grid);
-                    gem.name = "[" + i*-1 + "]" + "" + "[" + j + "]";
-
-                    _gemsGrid[i*-1, j] = gem;
+                    _gemsGrid[i, j] = gem;
                 }
             }
         }
 
-        private bool CheckForMatches(int column, int row, GameObject gemToCheck)
+        public bool CheckForMatches(int column, int row, GameObject gemToCheck)
         {
-            //if (row > 1 && column > 1)
-            //{
-            //    if (_gemsGrid[row - 1, column].CompareTag(gemToCheck.tag) && _gemsGrid[row - 2, column].CompareTag(gemToCheck.tag))
-            //    {
-            //        return true;
-            //    }
-
-            //    if (_gemsGrid[row, column - 1].CompareTag(gemToCheck.tag) && _gemsGrid[row, column - 2].CompareTag(gemToCheck.tag))
-            //    {
-            //        return true;
-            //    }
-            //}
-            //else if (row <=1 || column <= 1)
-            //{
-            //    if(row > 1)
-            //    {
-            //        if (_gemsGrid[row - 1, column].CompareTag(gemToCheck.tag) && _gemsGrid[row - 2, column].CompareTag(gemToCheck.tag))
-            //        {
-            //            return true;
-            //        }                    
-            //    }
-
-            //    if(column > 1)
-            //    {
-            //        if (_gemsGrid[row, column - 1].CompareTag(gemToCheck.tag) && _gemsGrid[row, column - 2].CompareTag(gemToCheck.tag))
-            //        {
-            //            return true;
-            //        }
-            //    }
-            //}
-
-            if (row >= 1 || column >= 1)
+            if (gemToCheck != null)
             {
-                if (row > 1)
+                if (row > 1 || column > 1)
                 {
-                    if (_gemsGrid[row - 1, column].CompareTag(gemToCheck.tag) && _gemsGrid[row - 2, column].CompareTag(gemToCheck.tag))
+                    if (row > 1)
                     {
-                        return true;
+                        if (_gemsGrid[row - 1, column] != null && _gemsGrid[row - 2, column] != null)
+                        {
+                            if (_gemsGrid[row - 1, column].CompareTag(gemToCheck.tag) && _gemsGrid[row - 2, column].CompareTag(gemToCheck.tag))
+                            {
+                                return true;
+                            }
+                        }
                     }
-                }
 
-                if (column > 1)
-                {
-                    if (_gemsGrid[row, column - 1].CompareTag(gemToCheck.tag) && _gemsGrid[row, column - 2].CompareTag(gemToCheck.tag))
+                    if (column > 1)
                     {
-                        return true;
+                        if (_gemsGrid[row, column - 1] != null && _gemsGrid[row, column - 2] != null)
+                        {
+                            if (_gemsGrid[row, column - 1].CompareTag(gemToCheck.tag) && _gemsGrid[row, column - 2].CompareTag(gemToCheck.tag))
+                            {
+                                return true;
+                            }
+                        }
                     }
                 }
             }
-
             return false;
         }
 
@@ -218,73 +170,20 @@ namespace Match3.Grid
             }
         }
 
-        public bool GemsMatchedOnGrid()
-        {
-            for (int i = 0; i < _height; i++)
-            {
-                for (int j = 0; j < _width; j++)
-                {
-                    if (_gemsGrid[i, j] != null)
-                    {
-                        if (_gemsGrid[i, j].GetComponent<Gem>().HasMatch)
-                        {
-                            return true;
-                        }
-                    }
-                }
-            }
-
-            return false;
-        }
+        
 
         private void SwitchGemsForDeadlockCheck(int row, int column, Vector2 direction)
         {
             GameObject holder = _gemsGrid[row + (int)direction.y, column + (int)direction.x];
             _gemsGrid[row + (int)direction.y, column + (int)direction.x] = _gemsGrid[row, column];
             _gemsGrid[row, column] = holder;
-        }
-
-        private bool CheckForMatches()
-        {
-            for (int i = 0; i < _height; i++)
-            {
-                for (int j = 0; j < _width; j++)
-                {
-                    if (_gemsGrid[i, j] != null)
-                    {
-                        if (i < _height - 2)
-                        {
-                            if (_gemsGrid[i + 1, j] != null && _gemsGrid[i + 2, j] != null)
-                            {
-                                if (_gemsGrid[i + 1, j].CompareTag(_gemsGrid[i, j].tag) && _gemsGrid[i + 2, j].CompareTag(_gemsGrid[i, j].tag))
-                                {
-                                    return true;
-                                }
-                            }
-                        }
-
-                        if (j < _width - 2)
-                        {
-                            if (_gemsGrid[i, j + 1] != null && _gemsGrid[i, j + 2] != null)
-                            {
-                                if (_gemsGrid[i, j + 1].CompareTag(_gemsGrid[i, j].tag) && _gemsGrid[i, j + 2].CompareTag(_gemsGrid[i, j].tag))
-                                {
-                                    return true;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            return false;
-        }
+        }        
 
         private bool SwitchAndCheckForDeadlock(int row, int column, Vector2 direction)
         {
             SwitchGemsForDeadlockCheck(row, column, direction);
 
-            if (CheckForMatches())
+            if (_findMatches.CheckForMatches())
             {
                 SwitchGemsForDeadlockCheck(row, column, direction);
                 return true;
@@ -370,47 +269,6 @@ namespace Match3.Grid
                 Invoke("ShuffleGems", 0.7f);
             }
         }
-        
-        //public void RebuildGrid()
-        //{
-        //    for (int i = 0; i < _height; i++)
-        //    {
-        //        for (int j = 0; j < _width; j++)
-        //        {
-        //            Destroy(_gemsGrid[i, j].gameObject);
-        //        }
-        //    }
-
-        //    _gemsGrid = null;
-        //    BuildGrid();
-        //}
-
-        //private IEnumerator DropRow()
-        //{
-        //    int nullSpots = 0;
-
-        //    for (int i = 0; i < _height; i++)
-        //    {
-        //        for (int j = _width-1; j >= 0; j--)
-        //        {
-        //            if (_gemsGrid[j, i] == null)
-        //            {
-        //                nullSpots++;
-        //            }
-        //            else if (nullSpots > 0)
-        //            {
-        //                _gemsGrid[j, i].GetComponent<Gem>().Row += nullSpots;
-        //                _gemsGrid[j, i].GetComponent<Gem>().PreviousRow = _gemsGrid[j, i].GetComponent<Gem>().Row;
-        //                _gemsGrid[j, i] = null;
-        //            }
-        //        }
-        //        nullSpots = 0;
-        //    }
-
-        //    yield return new WaitForSeconds(_waitSeconds);
-
-        //    StartCoroutine(SpawnGemsCo());
-        //}
 
         private IEnumerator DropRow()
         {
@@ -428,7 +286,6 @@ namespace Match3.Grid
                     {
                         _gemsGrid[i, j].GetComponent<Gem>().PreviousRow += nullSpots;
                         _gemsGrid[i, j].GetComponent<Gem>().Row += nullSpots;
-                        //_gemsGrid[i, j].GetComponent<Gem>().PreviousRow = _gemsGrid[j, i].GetComponent<Gem>().Row;
                         _gemsGrid[i, j] = null;
                     }
                 }
@@ -445,7 +302,7 @@ namespace Match3.Grid
             SpawnGems();
             yield return new WaitForSeconds(_waitSeconds);
 
-            while (GemsMatchedOnGrid())
+            while (_findMatches.GemsMatchedOnGrid())
             {
                 _streakValue ++;
                 FoundMatch();
@@ -490,6 +347,5 @@ namespace Match3.Grid
             get { return _currentState; }
             set { _currentState = value; }
         }
-
     }
 }

@@ -11,8 +11,6 @@ namespace Match3.Grid {
 
         private GridGenerator _gridGenerator;
 
-        //private List<GameObject> _matches = new List<GameObject>();
-
         void Start()
         {
             _gridGenerator = GetComponentInParent<GridGenerator>();
@@ -34,6 +32,63 @@ namespace Match3.Grid {
                     currentGem.GetComponent<Gem>().HasMatch = true;
                 }
             }
+        }
+
+        public bool CheckForMatches()
+        {
+            for (int i = 0; i < _gridGenerator.Height; i++)
+            {
+                for (int j = 0; j < _gridGenerator.Width; j++)
+                {
+                    if (_gridGenerator.GemsGrid[i, j] != null)
+                    {
+                        if (i < _gridGenerator.Height - 2)
+                        {
+                            if (_gridGenerator.GemsGrid[i + 1, j] != null && _gridGenerator.GemsGrid[i + 2, j] != null)
+                            {
+                                if (_gridGenerator.GemsGrid[i + 1, j].CompareTag(_gridGenerator.GemsGrid[i, j].tag) && _gridGenerator.GemsGrid[i + 2, j].CompareTag(_gridGenerator.GemsGrid[i, j].tag))
+                                {
+                                    return true;
+                                }
+                            }
+                        }
+
+                        if (j < _gridGenerator.Width - 2)
+                        {
+                            if (_gridGenerator.GemsGrid[i, j + 1] != null && _gridGenerator.GemsGrid[i, j + 2] != null)
+                            {
+                                if (_gridGenerator.GemsGrid[i, j + 1].CompareTag(_gridGenerator.GemsGrid[i, j].tag) && _gridGenerator.GemsGrid[i, j + 2].CompareTag(_gridGenerator.GemsGrid[i, j].tag))
+                                {
+                                    return true;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        
+
+        public bool GemsMatchedOnGrid()
+        {
+            for (int i = 0; i < _gridGenerator.Height; i++)
+            {
+                for (int j = 0; j < _gridGenerator.Width; j++)
+                {
+                    if (_gridGenerator.GemsGrid[i, j] != null)
+                    {
+                        if (_gridGenerator.GemsGrid[i, j].GetComponent<Gem>().HasMatch)
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+
+            return false;
         }
 
         private IEnumerator FindMatchesOnGridCo()
@@ -63,7 +118,6 @@ namespace Match3.Grid {
                             CompareGems(currentGem, upGem, downGem);
                         }
                     }
-
                 }
             }
         }

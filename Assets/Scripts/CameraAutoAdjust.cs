@@ -20,11 +20,6 @@ namespace Match3.Settings
 
         void Start()
         {
-            //if (_gridGenerator != null)
-            //{
-            //    AdjustCameraPos(_gridGenerator.Width - 1, _gridGenerator.Height - 1);
-            //}
-
             _aspectRatio = Camera.main.aspect;
         }
 
