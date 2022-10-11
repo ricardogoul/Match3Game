@@ -8,13 +8,17 @@ namespace Match3.Grid
 {
     public class GameManager : MonoBehaviour
     {
+        public int CurrentLevel { get; private set; }
+        
         private bool _checkRoundFinished;
         private bool _playingGame;
 
         [SerializeField]
         private SoundManager _soundManager;        
         [SerializeField]
-        private ScoreManager _scoreManager;
+        private Score score;
+        [SerializeField]
+        private Timer timer;
         [SerializeField]
         private MenuController _menuController;
         private GridGenerator _gridGenerator;
@@ -35,14 +39,14 @@ namespace Match3.Grid
         {
             if (_playingGame)
             {
-                if (_scoreManager.RemainingTime <= 0 && !_checkRoundFinished)
+                if (timer.RemainingTime <= 0 && !_checkRoundFinished)
                 {
                     _checkRoundFinished = true;
                     FailedRound();
                     _playingGame = false;
                 }
 
-                if (_scoreManager.ScoreGoalReached && !_checkRoundFinished)
+                if (score.ScoreGoalReached && !_checkRoundFinished)
                 {
                     _checkRoundFinished = true;
                     RoundFinished();
@@ -98,7 +102,7 @@ namespace Match3.Grid
         {
             UnFreezeGame();
             _checkRoundFinished = false;
-            _scoreManager.SetFirstLevel();
+            score.SetFirstLevel();
             _soundManager.PlayBackgroundMusic();
         }
 
@@ -108,7 +112,8 @@ namespace Match3.Grid
             _gridGenerator.CurrentState = GridGenerator.GameState.move;
             _checkRoundFinished = false;
             _gridGenerator.ShuffleGems();
-            _scoreManager.SetNextLevel();
+            CurrentLevel++;
+            score.SetNextLevel();
             _soundManager.PlayBackgroundMusic();
             _playingGame = true;
         }
