@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Match3.UI;
@@ -22,6 +23,11 @@ namespace Match3.Grid
         [SerializeField]
         private MenuController _menuController;
         private GridGenerator _gridGenerator;
+
+        private void Awake()
+        {
+            ServiceLocator.Provide(this);
+        }
 
         void Start()
         {

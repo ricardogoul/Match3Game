@@ -1,3 +1,4 @@
+using Match3.Grid;
 using Match3.UI;
 using UnityEngine;
 
@@ -8,12 +9,12 @@ public class ServiceLocator : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
         
-    private static ScoreManager scoreManagerService;
+    private static GameManager gameManager;
 
-    public static ScoreManager GetScoreManager() => scoreManagerService;
-    public static void Provide(ScoreManager service)
+    public static GameManager GetGameManager() => gameManager;
+    public static void Provide(GameManager service)
     { 
-        if(scoreManagerService != null) return;
-        scoreManagerService = service;
+        if(gameManager != null) return;
+        gameManager = service;
     }
 }
