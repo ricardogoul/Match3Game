@@ -8,7 +8,7 @@ namespace Match3.Settings
     public class CameraAutoAdjust : MonoBehaviour
     {
         [SerializeField]
-        private GridGenerator _gridGenerator;
+        private GridManager gridManager;
 
         [SerializeField]
         private float _cameraOffset;
@@ -25,9 +25,9 @@ namespace Match3.Settings
 
         void Update()
         {
-            if (_gridGenerator != null)
+            if (gridManager != null)
             {
-                AdjustCameraPos(_gridGenerator.GridColumns - 1, _gridGenerator.GridRows - 1);
+                AdjustCameraPos(gridManager.GridColumns - 1, gridManager.GridRows - 1);
             }
         }
 
@@ -36,7 +36,7 @@ namespace Match3.Settings
             Vector3 posToSet = new Vector3(xAxis/2, ((yAxis/2) - _yOffset)*-1, _cameraOffset);
             transform.position = posToSet;
             
-            Camera.main.orthographicSize = (_gridGenerator.GridRows/2 + _padding);
+            Camera.main.orthographicSize = (gridManager.GridRows/2 + _padding);
         }
     }
 }

@@ -8,7 +8,7 @@ using TMPro;
 
 namespace Match3.Grid
 {
-    public class GridGenerator : MonoBehaviour
+    public class GridManager : MonoBehaviour
     {
         [SerializeField]
         private int gridRows;
@@ -250,7 +250,7 @@ namespace Match3.Grid
                 }
             }
 
-            if (currentState == GridGenerator.GameState.move)
+            if (currentState == GridManager.GameState.move)
             {
                 ServiceLocator.GetSoundManager().PlaySwapGemsSound();
             }

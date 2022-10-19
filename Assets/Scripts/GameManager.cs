@@ -21,7 +21,7 @@ namespace Match3.Grid
         [SerializeField]
         private MenuController menuController;
         [SerializeField]
-        private GridGenerator gridGenerator;
+        private GridManager gridManager;
 
         private void Awake()
         {
@@ -59,7 +59,7 @@ namespace Match3.Grid
             UnfreezeGame();
             playingGame = true;
             checkRoundFinished = false;
-            gridGenerator.CurrentState = GridGenerator.GameState.move;
+            gridManager.CurrentState = GridManager.GameState.move;
             ServiceLocator.GetSoundManager().PlayBackgroundMusic();
             timer.TimerSetup();
         }
@@ -72,7 +72,7 @@ namespace Match3.Grid
         public void StartNextLevel()
         {
             SetGameUp();
-            gridGenerator.ShuffleGems();
+            gridManager.ShuffleGems();
             CurrentLevel++;
             score.SetNextLevel();
         }
@@ -98,7 +98,7 @@ namespace Match3.Grid
 
         private void FreezeGame()
         {
-            gridGenerator.CurrentState = GridGenerator.GameState.cantMove;
+            gridManager.CurrentState = GridManager.GameState.cantMove;
             Time.timeScale = 0;
         }
 

@@ -1696,7 +1696,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a2f77eec67e47b04ebc055023ba1a525, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _gridGenerator: {fileID: 0}
+  gridManager: {fileID: 0}
   _cameraOffset: -10
   _padding: 3
   _yOffset: 2
@@ -3986,7 +3986,7 @@ MonoBehaviour:
   score: {fileID: 635341407}
   timer: {fileID: 931049461}
   menuController: {fileID: 1033145063}
-  gridGenerator: {fileID: 2058325878}
+  gridManager: {fileID: 2058325878}
 --- !u!1 &1846256610
 GameObject:
   m_ObjectHideFlags: 0
@@ -4011,7 +4011,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1846256610}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -4293,7 +4293,7 @@ GameObject:
   - component: {fileID: 2058325877}
   - component: {fileID: 2058325878}
   m_Layer: 0
-  m_Name: GridGenerator
+  m_Name: GridManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4306,7 +4306,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2058325876}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0

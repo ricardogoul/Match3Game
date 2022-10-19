@@ -9,11 +9,11 @@ namespace Match3.Grid {
         [SerializeField]
         private float _waitSeconds;
 
-        private GridGenerator _gridGenerator;
+        private GridManager gridManager;
 
         void Start()
         {
-            _gridGenerator = GetComponentInParent<GridGenerator>();
+            gridManager = GetComponentInParent<GridManager>();
         }
 
         public void FindMatchesOnGrid()
@@ -36,28 +36,28 @@ namespace Match3.Grid {
 
         public bool CheckForMatches()
         {
-            for (int i = 0; i < _gridGenerator.GridRows; i++)
+            for (int i = 0; i < gridManager.GridRows; i++)
             {
-                for (int j = 0; j < _gridGenerator.GridColumns; j++)
+                for (int j = 0; j < gridManager.GridColumns; j++)
                 {
-                    if (_gridGenerator.GemsGrid[i, j] != null)
+                    if (gridManager.GemsGrid[i, j] != null)
                     {
-                        if (i < _gridGenerator.GridRows - 2)
+                        if (i < gridManager.GridRows - 2)
                         {
-                            if (_gridGenerator.GemsGrid[i + 1, j] != null && _gridGenerator.GemsGrid[i + 2, j] != null)
+                            if (gridManager.GemsGrid[i + 1, j] != null && gridManager.GemsGrid[i + 2, j] != null)
                             {
-                                if (_gridGenerator.GemsGrid[i + 1, j].CompareTag(_gridGenerator.GemsGrid[i, j].tag) && _gridGenerator.GemsGrid[i + 2, j].CompareTag(_gridGenerator.GemsGrid[i, j].tag))
+                                if (gridManager.GemsGrid[i + 1, j].CompareTag(gridManager.GemsGrid[i, j].tag) && gridManager.GemsGrid[i + 2, j].CompareTag(gridManager.GemsGrid[i, j].tag))
                                 {
                                     return true;
                                 }
                             }
                         }
 
-                        if (j < _gridGenerator.GridColumns - 2)
+                        if (j < gridManager.GridColumns - 2)
                         {
-                            if (_gridGenerator.GemsGrid[i, j + 1] != null && _gridGenerator.GemsGrid[i, j + 2] != null)
+                            if (gridManager.GemsGrid[i, j + 1] != null && gridManager.GemsGrid[i, j + 2] != null)
                             {
-                                if (_gridGenerator.GemsGrid[i, j + 1].CompareTag(_gridGenerator.GemsGrid[i, j].tag) && _gridGenerator.GemsGrid[i, j + 2].CompareTag(_gridGenerator.GemsGrid[i, j].tag))
+                                if (gridManager.GemsGrid[i, j + 1].CompareTag(gridManager.GemsGrid[i, j].tag) && gridManager.GemsGrid[i, j + 2].CompareTag(gridManager.GemsGrid[i, j].tag))
                                 {
                                     return true;
                                 }
@@ -74,13 +74,13 @@ namespace Match3.Grid {
 
         public bool GemsMatchedOnGrid()
         {
-            for (int i = 0; i < _gridGenerator.GridRows; i++)
+            for (int i = 0; i < gridManager.GridRows; i++)
             {
-                for (int j = 0; j < _gridGenerator.GridColumns; j++)
+                for (int j = 0; j < gridManager.GridColumns; j++)
                 {
-                    if (_gridGenerator.GemsGrid[i, j] != null)
+                    if (gridManager.GemsGrid[i, j] != null)
                     {
-                        if (_gridGenerator.GemsGrid[i, j].GetComponent<Gem>().HasMatch)
+                        if (gridManager.GemsGrid[i, j].GetComponent<Gem>().HasMatch)
                         {
                             return true;
                         }
@@ -94,26 +94,26 @@ namespace Match3.Grid {
         private IEnumerator FindMatchesOnGridCo()
         {
             yield return new WaitForSeconds(_waitSeconds);
-            for (int i = 0; i < _gridGenerator.GridRows; i++)
+            for (int i = 0; i < gridManager.GridRows; i++)
             {
-                for (int j = 0; j < _gridGenerator.GridColumns; j++)
+                for (int j = 0; j < gridManager.GridColumns; j++)
                 {
-                    GameObject currentGem = _gridGenerator.GemsGrid[i, j];
+                    GameObject currentGem = gridManager.GemsGrid[i, j];
 
                     if (currentGem != null)
                     {
-                        if (j > 0 && j < _gridGenerator.GridColumns - 1)
+                        if (j > 0 && j < gridManager.GridColumns - 1)
                         {
-                            GameObject leftGem = _gridGenerator.GemsGrid[i, j - 1];
-                            GameObject rightGem = _gridGenerator.GemsGrid[i, j + 1];
+                            GameObject leftGem = gridManager.GemsGrid[i, j - 1];
+                            GameObject rightGem = gridManager.GemsGrid[i, j + 1];
 
                             CompareGems(currentGem, leftGem, rightGem);
                         }
 
-                        if (i > 0 && i < _gridGenerator.GridRows - 1)
+                        if (i > 0 && i < gridManager.GridRows - 1)
                         {
-                            GameObject upGem = _gridGenerator.GemsGrid[i - 1, j];
-                            GameObject downGem = _gridGenerator.GemsGrid[i + 1, j];
+                            GameObject upGem = gridManager.GemsGrid[i - 1, j];
+                            GameObject downGem = gridManager.GemsGrid[i + 1, j];
 
                             CompareGems(currentGem, upGem, downGem);
                         }
