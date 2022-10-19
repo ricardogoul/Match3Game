@@ -36,14 +36,9 @@ public class Timer : MonoBehaviour
         timerPresenter.UpdateTimerTextEvent?.Invoke(Mathf.Round(RemainingTime).ToString());
     }
 
-    private void TimerSetup()
+    public void TimerSetup()
     {
         RemainingTime = roundTimeInSeconds;
-    }
-    
-    public void ResetTimer()
-    {
-        RemainingTime = roundTimeInSeconds + 1;
     }
 
     #endregion

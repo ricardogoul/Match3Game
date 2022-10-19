@@ -11,123 +11,101 @@ namespace Match3.Grid
     {
         public int CurrentLevel { get; private set; }
         
-        private bool _checkRoundFinished;
-        private bool _playingGame;
+        private bool checkRoundFinished;
+        private bool playingGame;
 
-        [SerializeField]
-        private SoundManager _soundManager;        
         [SerializeField]
         private Score score;
         [SerializeField]
         private Timer timer;
         [SerializeField]
-        private MenuController _menuController;
-        private GridGenerator _gridGenerator;
+        private MenuController menuController;
+        [SerializeField]
+        private GridGenerator gridGenerator;
 
         private void Awake()
         {
             ServiceLocator.Provide(this);
         }
 
-        void Start()
-        {
-            _gridGenerator = GetComponentInParent<GridGenerator>();
-
-            _soundManager.PlayBackgroundMusic();
-        }
-
-        void Update()
-        {
-
-        }
-
         private void FixedUpdate()
         {
-            if (_playingGame)
+            if (!playingGame) return;
+            
+            if (timer.RemainingTime <= 0 && !checkRoundFinished)
             {
-                if (timer.RemainingTime <= 0 && !_checkRoundFinished)
-                {
-                    _checkRoundFinished = true;
-                    FailedRound();
-                    _playingGame = false;
-                }
+                checkRoundFinished = true;
+                FailedRound();
+                playingGame = false;
+            }
 
-                if (score.ScoreGoalReached && !_checkRoundFinished)
-                {
-                    _checkRoundFinished = true;
-                    RoundFinished();
-                    RoundCleared();
-                    _playingGame = false;
-                }
+            if (score.ScoreGoalReached && !checkRoundFinished)
+            {
+                checkRoundFinished = true;
+                RoundFinished();
+                RoundCleared();
+                playingGame = false;
             }
         }
 
+        public void StartGame()
+        {
+            SetGameUp();
+            score.SetFirstLevel();
+        }
+        
+        public void SetGameUp()
+        {
+            UnfreezeGame();
+            playingGame = true;
+            checkRoundFinished = false;
+            gridGenerator.CurrentState = GridGenerator.GameState.move;
+            ServiceLocator.GetSoundManager().PlayBackgroundMusic();
+            timer.TimerSetup();
+        }
+
+        private void UnfreezeGame()
+        {
+            Time.timeScale = 1;
+        }
+        
+        public void StartNextLevel()
+        {
+            SetGameUp();
+            gridGenerator.ShuffleGems();
+            CurrentLevel++;
+            score.SetNextLevel();
+        }
+        
         private void RoundFinished()
         {
-            _soundManager.StopBackgroundMusic();            
+            ServiceLocator.GetSoundManager().StopBackgroundMusic();            
 
-            //if (!_gridGenerator.GemsMatchedOnGrid())
-            //{
-            Invoke("FreezeGame", 1);
-            _menuController.ClearedLevel();            
-            //}
-            //else
-            //{
-            //    while (_gridGenerator.GemsMatchedOnGrid())
-            //    {
-
-            //    }
-            //    Invoke("FreezeGame", 1);
-            //    _menuController.ClearedLevel();
-            //}
+            Invoke(nameof(FreezeGame), 1);
+            menuController.ClearedLevel();
         }
 
         private void FailedRound()
         {
-            Invoke("FreezeGame", 1);
-            _menuController.FailedRound();
+            Invoke(nameof(FreezeGame), 1);
+            menuController.FailedRound();
         }
 
         private void RoundCleared()
         {
-            _soundManager.PlayClearLevelSound();
+            ServiceLocator.GetSoundManager().PlayClearLevelSound();
         }
 
         private void FreezeGame()
         {
-            _gridGenerator.CurrentState = GridGenerator.GameState.cantMove;
+            gridGenerator.CurrentState = GridGenerator.GameState.cantMove;
             Time.timeScale = 0;
-        }
-
-        public void UnFreezeGame()
-        {
-            Time.timeScale = 1;
-        }
-
-        public void RestartGame()
-        {
-            UnFreezeGame();
-            _checkRoundFinished = false;
-            score.SetFirstLevel();
-            _soundManager.PlayBackgroundMusic();
-        }
-
-        public void StartNextLevel()
-        {
-            UnFreezeGame();
-            _gridGenerator.CurrentState = GridGenerator.GameState.move;
-            _checkRoundFinished = false;
-            _gridGenerator.ShuffleGems();
-            CurrentLevel++;
-            score.SetNextLevel();
-            _soundManager.PlayBackgroundMusic();
-            _playingGame = true;
         }
 
         public bool PlayingGame
         {
-            get { return _playingGame; }
-            set { _playingGame = value; }
+            get { return playingGame; }
+            set { playingGame = value; }
         }
     }
 }

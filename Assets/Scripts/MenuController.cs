@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -24,15 +25,9 @@ namespace Match3.UI
         [SerializeField]
         private Text _failedAtLevelText;
 
-        [SerializeField]
-        private GameManager _gameManager;
-        [SerializeField]
-        private ScoreManager _scoreManager;
-        private GridGenerator _gridGenerator;
-
-        void Start()
+        private void Start()
         {
-            _gridGenerator = GetComponentInParent<GridGenerator>();
+            ServiceLocator.GetSoundManager().PlayBackgroundMusic();
         }
 
         public void StartButton()
@@ -42,32 +37,30 @@ namespace Match3.UI
                 _menuAnim.SetTrigger("PlayGame");
                 _innerMenuAnim.SetTrigger("PlayGame");
 
-                _gameManager.RestartGame();
-                _gridGenerator.CurrentState = GridGenerator.GameState.move;
-                _gameManager.PlayingGame = true;
-                _nextLevelButtonText.text = "Level " + (_scoreManager.CurrentLevel + 1).ToString();
-                _nextLevelMessage.text = "Level " + _scoreManager.CurrentLevel.ToString() + " Cleared!";
+                ServiceLocator.GetGameManager().StartGame();
+                _nextLevelButtonText.text = "Level " + (ServiceLocator.GetGameManager().CurrentLevel + 1).ToString();
+                _nextLevelMessage.text = "Level " + ServiceLocator.GetGameManager().CurrentLevel.ToString() + " Cleared!";
             }
         }
 
         public void NextLevelButton()
         {
             _levelClearedAnim.SetTrigger("NextLevel");
-            _gameManager.StartNextLevel();
+            ServiceLocator.GetGameManager().StartNextLevel();
             Invoke("UpdateTexts", 1);
         }
 
         private void UpdateTexts()
         {
-            _nextLevelButtonText.text = "Level " + (_scoreManager.CurrentLevel + 1).ToString();
-            _nextLevelMessage.text = "Level " + _scoreManager.CurrentLevel.ToString() + " Cleared!";
+            _nextLevelButtonText.text = "Level " + (ServiceLocator.GetGameManager().CurrentLevel + 1).ToString();
+            _nextLevelMessage.text = "Level " + ServiceLocator.GetGameManager().CurrentLevel.ToString() + " Cleared!";
         }
 
         public void MenuButton()
         {
             _levelClearedAnim.SetTrigger("NextLevel");            
             Invoke("CallMenu", 1f);
-            _gameManager.RestartGame();
+            ServiceLocator.GetGameManager().SetGameUp();
 
         }
 
@@ -75,12 +68,12 @@ namespace Match3.UI
         {
             _failedLevelAnim.SetTrigger("CallMenu");
             Invoke("CallMenu", 1f);
-            _gameManager.RestartGame();
+            ServiceLocator.GetGameManager().SetGameUp();
         }
 
         public void FailedRound()
         {
-            _failedAtLevelText.text = "You lost at level " + _scoreManager.CurrentLevel + ".";
+            _failedAtLevelText.text = "You lost at level " + ServiceLocator.GetGameManager().CurrentLevel + ".";
             _failedLevelAnim.SetTrigger("LevelCleared");
         }
 

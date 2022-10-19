@@ -36,13 +36,13 @@ namespace Match3.Grid {
 
         public bool CheckForMatches()
         {
-            for (int i = 0; i < _gridGenerator.Height; i++)
+            for (int i = 0; i < _gridGenerator.GridRows; i++)
             {
-                for (int j = 0; j < _gridGenerator.Width; j++)
+                for (int j = 0; j < _gridGenerator.GridColumns; j++)
                 {
                     if (_gridGenerator.GemsGrid[i, j] != null)
                     {
-                        if (i < _gridGenerator.Height - 2)
+                        if (i < _gridGenerator.GridRows - 2)
                         {
                             if (_gridGenerator.GemsGrid[i + 1, j] != null && _gridGenerator.GemsGrid[i + 2, j] != null)
                             {
@@ -53,7 +53,7 @@ namespace Match3.Grid {
                             }
                         }
 
-                        if (j < _gridGenerator.Width - 2)
+                        if (j < _gridGenerator.GridColumns - 2)
                         {
                             if (_gridGenerator.GemsGrid[i, j + 1] != null && _gridGenerator.GemsGrid[i, j + 2] != null)
                             {
@@ -74,9 +74,9 @@ namespace Match3.Grid {
 
         public bool GemsMatchedOnGrid()
         {
-            for (int i = 0; i < _gridGenerator.Height; i++)
+            for (int i = 0; i < _gridGenerator.GridRows; i++)
             {
-                for (int j = 0; j < _gridGenerator.Width; j++)
+                for (int j = 0; j < _gridGenerator.GridColumns; j++)
                 {
                     if (_gridGenerator.GemsGrid[i, j] != null)
                     {
@@ -94,15 +94,15 @@ namespace Match3.Grid {
         private IEnumerator FindMatchesOnGridCo()
         {
             yield return new WaitForSeconds(_waitSeconds);
-            for (int i = 0; i < _gridGenerator.Height; i++)
+            for (int i = 0; i < _gridGenerator.GridRows; i++)
             {
-                for (int j = 0; j < _gridGenerator.Width; j++)
+                for (int j = 0; j < _gridGenerator.GridColumns; j++)
                 {
                     GameObject currentGem = _gridGenerator.GemsGrid[i, j];
 
                     if (currentGem != null)
                     {
-                        if (j > 0 && j < _gridGenerator.Width - 1)
+                        if (j > 0 && j < _gridGenerator.GridColumns - 1)
                         {
                             GameObject leftGem = _gridGenerator.GemsGrid[i, j - 1];
                             GameObject rightGem = _gridGenerator.GemsGrid[i, j + 1];
@@ -110,7 +110,7 @@ namespace Match3.Grid {
                             CompareGems(currentGem, leftGem, rightGem);
                         }
 
-                        if (i > 0 && i < _gridGenerator.Height - 1)
+                        if (i > 0 && i < _gridGenerator.GridRows - 1)
                         {
                             GameObject upGem = _gridGenerator.GemsGrid[i - 1, j];
                             GameObject downGem = _gridGenerator.GemsGrid[i + 1, j];

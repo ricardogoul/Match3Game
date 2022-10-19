@@ -89,7 +89,7 @@ namespace Match3.Piece
 
                 if (Mathf.Abs(_swipeDirection.x) > Mathf.Abs(_swipeDirection.y))
                 {
-                    if (_swipeDirection.x > 0 && _column < _gridGenerator.Width - 1)
+                    if (_swipeDirection.x > 0 && _column < _gridGenerator.GridColumns - 1)
                     {
                         MoveRight();
                     }
@@ -104,7 +104,7 @@ namespace Match3.Piece
                     {
                         MoveUp();
                     }
-                    if (_swipeDirection.y < 0.4 && _row < _gridGenerator.Height - 1)
+                    if (_swipeDirection.y < 0.4 && _row < _gridGenerator.GridRows - 1)
                     {
                         MoveDown();
                     }                    

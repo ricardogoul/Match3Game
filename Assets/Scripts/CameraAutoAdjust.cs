@@ -27,7 +27,7 @@ namespace Match3.Settings
         {
             if (_gridGenerator != null)
             {
-                AdjustCameraPos(_gridGenerator.Width - 1, _gridGenerator.Height - 1);
+                AdjustCameraPos(_gridGenerator.GridColumns - 1, _gridGenerator.GridRows - 1);
             }
         }
 
@@ -36,7 +36,7 @@ namespace Match3.Settings
             Vector3 posToSet = new Vector3(xAxis/2, ((yAxis/2) - _yOffset)*-1, _cameraOffset);
             transform.position = posToSet;
             
-            Camera.main.orthographicSize = (_gridGenerator.Height/2 + _padding);
+            Camera.main.orthographicSize = (_gridGenerator.GridRows/2 + _padding);
         }
     }
 }
