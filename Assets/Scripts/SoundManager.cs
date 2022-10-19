@@ -1,43 +1,46 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Match3.Sounds
 {
     public class SoundManager : MonoBehaviour
     {
         [SerializeField]
-        private AudioSource _explodeGemSound;
+        private AudioSource explodeGemSound;
         [SerializeField]
-        private AudioSource _clearLevelSound;
+        private AudioSource clearLevelSound;
         [SerializeField]
-        private AudioSource _swapGemsSound;
+        private AudioSource swapGemsSound;
         [SerializeField]
-        private AudioSource _backGroundMusic;
+        private AudioSource backGroundMusic;
+
+        private void OnEnable()
+        {
+            ServiceLocator.Provide(this);
+        }
 
         public void PlayExplodeGemSound()
         {
-            _explodeGemSound.Play();
+            explodeGemSound.Play();
         }
 
         public void PlayClearLevelSound()
         {
-            _clearLevelSound.Play();
+            clearLevelSound.Play();
         }
 
         public void PlaySwapGemsSound()
         {
-            _swapGemsSound.Play();
+            swapGemsSound.Play();
         }
 
         public void PlayBackgroundMusic()
         {
-            _backGroundMusic.Play();
+            backGroundMusic.Play();
         }
 
         public void StopBackgroundMusic()
         {
-            _backGroundMusic.Stop();
+            backGroundMusic.Stop();
         }
     }
 }
