@@ -8,248 +8,264 @@ namespace Match3.Piece
 {
     public class Gem : MonoBehaviour
     {
-        private Vector2 _mouseClicked;
-        private Vector2 _mouseReleased;
-        private Vector2 _swipeDirection;
-        private Vector2 _auxPos;
-
-        private int _row;
-        private int _column;
-        private int _currentRow; // Y
-        private int _currentCol; // X        
-        private int _previousRow;
-        private int _previousCol;
-
-        [Tooltip("Amont of seconds to wait before going back to last position when switched.")]
+        public bool HasMatch { get; set; }
+        public int Row { get; set; }
+        public int Column { get; set; }
+        public int PreviousRow { get; set; }
+        
+        [Tooltip("Amount of seconds to wait before going back to last position when switched.")]
         [SerializeField]
-        private float _waitSeconds;
-        [Tooltip("Amont of seconds to be able to move.")]
+        private float waitSeconds;
+        [Tooltip("Amount of seconds to be able to move.")]
         [SerializeField]
-        private float _waitSecondsToMove;
+        private float waitSecondsToMove;
 
-        private bool _hasMatch;
+        private const float TimeToLerp = 0.4f;
+        
+        private Vector2 mouseClicked;
+        private Vector2 mouseReleased;
 
-        private GameObject _swapedGem;
+        private int previousCol;
 
-        private GridGenerator _gridGenerator;
-        private FindMatches _findMatches;
-        private SoundManager _soundManager;
+        private Gem swappedGem;
 
-        void Start()
+        private GridManager gridManager;
+
+        public Gem(int column, int row, GridManager gridManager)
         {
-            _gridGenerator = GetComponentInParent<GridGenerator>();
-            _findMatches = GetComponentInParent<FindMatches>();
-            _soundManager = FindObjectOfType<SoundManager>();
-        }
-
-        void Update()
-        {
-            _currentRow = _row;
-            _currentCol = _column;                       
+            this.Column = column;
+            this.Row = row;
+            this.gridManager = gridManager;
         }
 
         private void FixedUpdate()
         {
-            MoveSpriteHorizontally();
-            MoveSpriteVertically();
+            ChangeColorWhenHasMatch();
+        }
 
-            if (_hasMatch)
-            {
-                SpriteRenderer gemSprite = GetComponent<SpriteRenderer>();
-                gemSprite.color = Color.grey;
-            }
+        private void ChangeColorWhenHasMatch()
+        {
+            if (!HasMatch) return;
+            
+            SpriteRenderer gemSprite = GetComponent<SpriteRenderer>();
+            gemSprite.color = Color.grey;
         }
 
         private void OnMouseDown()
         {
-            if (_gridGenerator.CurrentState == GridGenerator.GameState.move)
-            {
-                _mouseClicked = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            }
+            if (gridManager.CurrentState != GridManager.GameState.move) return;
+            GetMouseClick();
         }
 
         private void OnMouseUp()
         {
-            if (_gridGenerator.CurrentState == GridGenerator.GameState.move)
-            {
-                _mouseReleased = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-                CalculateDirection();
-            }
+            if (gridManager.CurrentState != GridManager.GameState.move) return;
+            GetMouseRelease();
+            CheckForMovement();
+        }
+
+        private void GetMouseClick()
+        {
+            mouseClicked = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        }
+
+        private void GetMouseRelease()
+        {
+            mouseReleased = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        }
+
+        private void CheckForMovement()
+        {
+            var swipeDirection = CalculateSwipeDirection();
+            
+            if (swipeDirection.x == 0 && swipeDirection.y == 0) return;
+            Move(swipeDirection);
         }
         
-        private void CalculateDirection()
+        private Vector2 CalculateSwipeDirection()
         {
-            _swipeDirection = _mouseReleased - _mouseClicked;
-            _swipeDirection.Normalize();
-
-            if (_swipeDirection.x != 0 || _swipeDirection.y != 0)
-            {
-                _previousRow = _row;
-                _previousCol = _column;
-
-                if (Mathf.Abs(_swipeDirection.x) > Mathf.Abs(_swipeDirection.y))
-                {
-                    if (_swipeDirection.x > 0 && _column < _gridGenerator.GridColumns - 1)
-                    {
-                        MoveRight();
-                    }
-                    else if (_swipeDirection.x < 0 && _column > 0)
-                    {
-                        MoveLeft();
-                    }                    
-                }
-                else
-                {
-                    if (_swipeDirection.y > 0.4 && _row > 0)
-                    {
-                        MoveUp();
-                    }
-                    if (_swipeDirection.y < 0.4 && _row < _gridGenerator.GridRows - 1)
-                    {
-                        MoveDown();
-                    }                    
-                }
-
-                if (_gridGenerator.CurrentState == GridGenerator.GameState.move)
-                {
-                    _soundManager.PlaySwapGemsSound();
-                }
-                _gridGenerator.CurrentState = GridGenerator.GameState.cantMove;
-                StartCoroutine(ReturnPos());
-            }
+            var swipeDirection = mouseReleased - mouseClicked;
+            swipeDirection.Normalize();
+            return swipeDirection;
         }
 
+        private void Move(Vector2 swipeDirection)
+        {
+            PreviousRow = Row;
+            previousCol = Column;
+
+            if (IsLateralMovement(swipeDirection))
+            {
+                switch (swipeDirection.x)
+                {
+                    case > 0 when Column < gridManager.GridColumns - 1:
+                        MoveRight();
+                        break;
+                    case < 0 when Column > 0:
+                        MoveLeft();
+                        break;
+                }
+
+                MoveSpriteHorizontally();
+            }
+            else
+            {
+                switch (swipeDirection.y)
+                {
+                    case > 0.4f when Row > 0:
+                        MoveUp();
+                        break;
+                    case < 0.4f when Row < gridManager.GridRows - 1:
+                        MoveDown();
+                        break;
+                }
+                
+                MoveSpriteVertically();
+            } 
+
+            if (gridManager.CurrentState == GridManager.GameState.move)
+            {
+                ServiceLocator.GetSoundManager().PlaySwapGemsSound();
+            }
+            gridManager.CurrentState = GridManager.GameState.cantMove;
+            StartCoroutine(ProcessMovement());
+        }
+        
+        private bool IsLateralMovement(Vector2 swipeDirection)
+        {
+            return Mathf.Abs(swipeDirection.x) > Mathf.Abs(swipeDirection.y);
+        }
+        
         private void MoveRight()
         {
-            _swapedGem = _gridGenerator.GemsGrid[_row, _column + 1];
-            _swapedGem.GetComponent<Gem>()._column -= 1;
-            _column += 1;
+            swappedGem = gridManager.GemsGrid[Row, Column + 1].GetComponent<Gem>();
+            swappedGem.Column -= 1;
+            Column += 1;
         }
 
         private void MoveLeft()
         {
-            _swapedGem = _gridGenerator.GemsGrid[_row, _column - 1];
-            _swapedGem.GetComponent<Gem>()._column += 1;
-            _column -= 1;
+            swappedGem = gridManager.GemsGrid[Row, Column - 1].GetComponent<Gem>();
+            swappedGem.Column += 1;
+            Column -= 1;
         }
 
         private void MoveUp()
         {
-            _swapedGem = _gridGenerator.GemsGrid[_row - 1, _column];
-            _swapedGem.GetComponent<Gem>()._row += 1;
-            _row -= 1;
+            swappedGem = gridManager.GemsGrid[Row - 1, Column].GetComponent<Gem>();
+            swappedGem.Row += 1;
+            Row -= 1;
         }
 
         private void MoveDown()
         {
-            _swapedGem = _gridGenerator.GemsGrid[_row + 1, _column];
-            _swapedGem.GetComponent<Gem>()._row -= 1;
-            _row += 1;
+            swappedGem = gridManager.GemsGrid[Row + 1, Column].GetComponent<Gem>();
+            swappedGem.Row -= 1;
+            Row += 1;
         }
-
+        
         private void MoveSpriteHorizontally()
         {
-            if (Mathf.Abs(_currentCol - transform.position.x) > 0.1f)
+            var currentPosition = transform.position;
+            var currentColumn = Column;
+            
+            if (Mathf.Abs(currentColumn - currentPosition.x) > 0.1f)
             {
-                _auxPos = new Vector2(_currentCol, transform.position.y);
-                transform.position = Vector2.Lerp(transform.position, _auxPos, 0.4f);
+                var auxPosition = new Vector2(currentColumn, currentPosition.y);
+                currentPosition = Vector2.Lerp(currentPosition, auxPosition, TimeToLerp);
+                transform.position = currentPosition;
 
-                if (_gridGenerator.GemsGrid[_row, _column] != gameObject)
+                if (gridManager.GemsGrid[Row, Column] != gameObject)
                 {
-                    _gridGenerator.GemsGrid[_row, _column] = gameObject;
+                    gridManager.GemsGrid[Row, Column] = gameObject;
                 }
 
-                _findMatches.FindMatchesOnGrid();
+                ServiceLocator.GetFindMatches().FindMatchesOnGrid();
             }
             else
             {
-                _auxPos = new Vector2(_currentCol, transform.position.y);
-                transform.position = _auxPos;                
+                var auxTransform = transform;
+                var auxPosition = new Vector2(currentColumn, auxTransform.position.y);
+                auxTransform.position = auxPosition;                
             }
         }
 
         private void MoveSpriteVertically()
         {
-            if (Mathf.Abs(_currentRow - transform.position.y) > 0.1f)
+            var currentPosition = transform.position;
+            var currentRow = Row;
+            
+            if (Mathf.Abs(currentRow - currentPosition.y) > 0.1f)
             {
-                _auxPos = new Vector2(transform.position.x, _currentRow * -1);
-                transform.position = Vector2.Lerp(transform.position, _auxPos, 0.4f);
+                var auxPosition = new Vector2(currentPosition.x, currentRow * -1);
+                currentPosition = Vector2.Lerp(currentPosition, auxPosition, 0.4f);
+                transform.position = currentPosition;
 
-                if (_gridGenerator.GemsGrid[_row, _column] != gameObject)
+                if (gridManager.GemsGrid[Row, Column] != gameObject)
                 {
-                    _gridGenerator.GemsGrid[_row, _column] = gameObject;
+                    gridManager.GemsGrid[Row, Column] = gameObject;
                 }
 
-                _findMatches.FindMatchesOnGrid();
+                ServiceLocator.GetFindMatches().FindMatchesOnGrid();
             }
             else
             {
-                _auxPos = new Vector2(transform.position.x, _currentRow * -1);
-                transform.position = _auxPos;
+                var auxTransform = transform;
+                var auxPosition = new Vector2(auxTransform.position.x, currentRow * -1);
+                auxTransform.position = auxPosition;
             }
         }
 
-        private IEnumerator ReturnPos()
+        private IEnumerator ProcessMovement()
         {
-            yield return new WaitForSeconds(_waitSeconds);
+            yield return new WaitForSeconds(waitSeconds);
             
-            if(_swapedGem != null)
+            if(swappedGem != null)
             {
-                if (!_hasMatch && !_swapedGem.GetComponent<Gem>()._hasMatch)
+                if (FoundMatchAfterMovement())
                 {
-                    if (_row != _previousRow)
-                    {
-                        _swapedGem.GetComponent<Gem>()._row = _row;
-                        _row = _previousRow;
-                    }
-                    else if (_column != _previousCol)
-                    {
-                        _swapedGem.GetComponent<Gem>()._column = _column;
-                        _column = _previousCol;
-                    }
-
-                    if (_gridGenerator.CurrentState == GridGenerator.GameState.move)
-                    {
-                        _soundManager.PlaySwapGemsSound();
-                    }
-                    yield return new WaitForSeconds(_waitSecondsToMove);
-                    _gridGenerator.CurrentState = GridGenerator.GameState.move;
+                    gridManager.FoundMatch();
                 }
                 else
                 {
-                    _gridGenerator.FoundMatch();
+                    ReturnToPreviousPosition();
+                    
+                    if (gridManager.CurrentState == GridManager.GameState.move)
+                    {
+                        ServiceLocator.GetSoundManager().PlaySwapGemsSound();
+                    }
+                    
+                    yield return new WaitForSeconds(waitSecondsToMove);
+                    gridManager.CurrentState = GridManager.GameState.move;
                 }
 
-                _swapedGem = null;
+                swappedGem = null;
             }
             else
             {
-                _gridGenerator.CurrentState = GridGenerator.GameState.move;
+                gridManager.CurrentState = GridManager.GameState.move;
             }
-        }        
-
-        public bool HasMatch
+        }
+        
+        private bool FoundMatchAfterMovement()
         {
-            get { return _hasMatch; }
-            set { _hasMatch = value; }
+            return HasMatch || swappedGem.HasMatch;
         }
 
-        public int Row
+        private void ReturnToPreviousPosition()
         {
-            get { return _row; }
-            set { _row = value; }
-        }
-
-        public int Column
-        {
-            get { return _column; }
-            set { _column = value; }
-        }
-
-        public int PreviousRow
-        {
-            get { return _previousRow; }
-            set { _previousRow = value; }
+            if (Row != PreviousRow)
+            {
+                swappedGem.Row = Row;
+                Row = PreviousRow;
+                MoveSpriteVertically();
+            }
+            else if (Column != previousCol)
+            {
+                swappedGem.Column = Column;
+                Column = previousCol;
+                MoveSpriteHorizontally();
+            }
         }
     }
 }

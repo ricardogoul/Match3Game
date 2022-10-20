@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Match3.Piece;
@@ -11,9 +12,14 @@ namespace Match3.Grid {
 
         private GridManager gridManager;
 
-        void Start()
+        void Awake()
         {
-            gridManager = GetComponentInParent<GridManager>();
+            gridManager = FindObjectOfType<GridManager>();
+        }
+
+        private void OnEnable()
+        {
+            ServiceLocator.Provide(this);
         }
 
         public void FindMatchesOnGrid()
@@ -112,10 +118,10 @@ namespace Match3.Grid {
 
                         if (i > 0 && i < gridManager.GridRows - 1)
                         {
-                            GameObject upGem = gridManager.GemsGrid[i - 1, j];
-                            GameObject downGem = gridManager.GemsGrid[i + 1, j];
+                            GameObject upperGem = gridManager.GemsGrid[i - 1, j];
+                            GameObject lowerGem = gridManager.GemsGrid[i + 1, j];
 
-                            CompareGems(currentGem, upGem, downGem);
+                            CompareGems(currentGem, upperGem, lowerGem);
                         }
                     }
                 }

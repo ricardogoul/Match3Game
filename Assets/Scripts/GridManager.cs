@@ -35,15 +35,11 @@ namespace Match3.Grid
 
         private GameObject[,] gemsGrid;
         private int streakValue = 1;
-        
-        private FindMatches findMatches;
 
         private GameState currentState;
 
         private void Start()
         {
-            findMatches = GetComponent<FindMatches>();
-
             gemsGrid = new GameObject[gridRows, gridColumns];
 
             BuildGrid();
@@ -174,7 +170,7 @@ namespace Match3.Grid
         {
             SwitchGemsForDeadlockCheck(row, column, direction);
 
-            if (findMatches.CheckForMatches())
+            if (ServiceLocator.GetFindMatches().CheckForMatches())
             {
                 SwitchGemsForDeadlockCheck(row, column, direction);
                 return true;
@@ -293,7 +289,7 @@ namespace Match3.Grid
             SpawnGems();
             yield return new WaitForSeconds(waitSeconds);
 
-            while (findMatches.GemsMatchedOnGrid())
+            while (ServiceLocator.GetFindMatches().GemsMatchedOnGrid())
             {
                 streakValue ++;
                 FoundMatch();
