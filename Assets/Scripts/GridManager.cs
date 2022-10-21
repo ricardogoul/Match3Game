@@ -55,14 +55,10 @@ namespace Match3.Grid
                     Vector2 auxPos = new Vector2(column, (row*-1) + gridOffset);
                     int gemNumber = Random.Range(0, gemPrefabs.Length);
                     
-                    // int iterations = 0;
-                    //
-                    // while (CheckForMatches(column, row, gemPrefabs[gemNumber]) && iterations < 50)
-                    // {
-                    //     gemNumber = Random.Range(0, gemPrefabs.Length);
-                    //     iterations++;
-                    // }
-                    // iterations = 0;
+                    while (CheckForMatches(column, row, gemPrefabs[gemNumber]))
+                    {
+                        gemNumber = Random.Range(0, gemPrefabs.Length);
+                    }
 
                     InstantiateGem(column, row, gemNumber, auxPos);
                 }
@@ -71,11 +67,11 @@ namespace Match3.Grid
 
         private void InstantiateGem(int column, int row, int gemNumber, Vector2 gemPos)
         {
-            GameObject gem = Instantiate(gemPrefabs[gemNumber], gemPos, Quaternion.identity, gridTransform);
-            gem.GetComponent<Gem>().Row = row;
-            gem.GetComponent<Gem>().Column = column;
+            var gemObject = Instantiate(gemPrefabs[gemNumber], gemPos, Quaternion.identity, gridTransform);
+            var gem = gemObject.AddComponent<Gem>();
+            gem.Constructor(column, row, this);
 
-            gemsGrid[row, column] = gem;
+            gemsGrid[row, column] = gemObject;
         }
 
         private bool CheckForMatches(int column, int row, GameObject gemToCheck)
@@ -138,20 +134,16 @@ namespace Match3.Grid
 
         private void SpawnGems()
         {
-            for (int i = 0; i < gridRows; i++)
+            for (int row = 0; row < gridRows; row++)
             {
-                for (int j = 0; j < gridColumns; j++)
+                for (int column = 0; column < gridColumns; column++)
                 {
-                    if(gemsGrid[i, j] == null)
+                    if(gemsGrid[row, column] == null)
                     {
-                        Vector2 auxPos = new Vector2(j, (i*-1) + gridOffset);
+                        Vector2 auxPos = new Vector2(column, (row*-1) + gridOffset);
                         int gemNumber = Random.Range(0, gemPrefabs.Length);
 
-                        GameObject gem = Instantiate(gemPrefabs[gemNumber], auxPos, Quaternion.identity, gridTransform);
-                        gemsGrid[i, j] = gem;
-
-                        gem.GetComponent<Gem>().Row = i;
-                        gem.GetComponent<Gem>().Column = j;
+                        InstantiateGem(column, row, gemNumber, auxPos);
                     }
                 }
             }

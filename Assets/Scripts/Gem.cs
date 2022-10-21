@@ -15,12 +15,12 @@ namespace Match3.Piece
         
         [Tooltip("Amount of seconds to wait before going back to last position when switched.")]
         [SerializeField]
-        private float waitSeconds;
+        private float waitSeconds = 0.2f;
         [Tooltip("Amount of seconds to be able to move.")]
         [SerializeField]
-        private float waitSecondsToMove;
+        private float waitSecondsToMove = 0.2f;
 
-        private const float TimeToLerp = 0.4f;
+        private const float TimeToLerp = 0.2f;
         
         private Vector2 mouseClicked;
         private Vector2 mouseReleased;
@@ -31,15 +31,17 @@ namespace Match3.Piece
 
         private GridManager gridManager;
 
-        public Gem(int column, int row, GridManager gridManager)
+        public void Constructor(int column, int row, GridManager gridManager)
         {
-            this.Column = column;
-            this.Row = row;
+            Column = column;
+            Row = row;
             this.gridManager = gridManager;
         }
 
         private void FixedUpdate()
         {
+            MoveSpriteHorizontally();
+            MoveSpriteVertically();
             ChangeColorWhenHasMatch();
         }
 
@@ -105,8 +107,6 @@ namespace Match3.Piece
                         MoveLeft();
                         break;
                 }
-
-                MoveSpriteHorizontally();
             }
             else
             {
@@ -119,8 +119,6 @@ namespace Match3.Piece
                         MoveDown();
                         break;
                 }
-                
-                MoveSpriteVertically();
             } 
 
             if (gridManager.CurrentState == GridManager.GameState.move)
@@ -198,7 +196,7 @@ namespace Match3.Piece
             if (Mathf.Abs(currentRow - currentPosition.y) > 0.1f)
             {
                 var auxPosition = new Vector2(currentPosition.x, currentRow * -1);
-                currentPosition = Vector2.Lerp(currentPosition, auxPosition, 0.4f);
+                currentPosition = Vector2.Lerp(currentPosition, auxPosition, TimeToLerp);
                 transform.position = currentPosition;
 
                 if (gridManager.GemsGrid[Row, Column] != gameObject)
@@ -258,13 +256,11 @@ namespace Match3.Piece
             {
                 swappedGem.Row = Row;
                 Row = PreviousRow;
-                MoveSpriteVertically();
             }
             else if (Column != previousCol)
             {
                 swappedGem.Column = Column;
                 Column = previousCol;
-                MoveSpriteHorizontally();
             }
         }
     }
