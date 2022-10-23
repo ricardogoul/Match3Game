@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 3012028789011487167}
   - component: {fileID: 2693613163245019215}
   - component: {fileID: 9216796356082045174}
+  - component: {fileID: -5263244642700826768}
   m_Layer: 0
   m_Name: Bush Gem
   m_TagString: Bush Gem
@@ -111,3 +112,19 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.98, y: 0.98}
   m_EdgeRadius: 0
+--- !u!114 &-5263244642700826768
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4747714499894329094}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6bbbf4d4f91198c4e893072e7545eb5b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gemScriptableObject: {fileID: 11400000, guid: 5a4e39bfa0bc3a549b86e070740da6a6,
+    type: 2}
+  waitSeconds: 0.2
+  waitSecondsToMove: 0.2

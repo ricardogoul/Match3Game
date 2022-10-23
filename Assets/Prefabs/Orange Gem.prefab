@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 490387788918286319}
   - component: {fileID: 748573662397292063}
   - component: {fileID: 5830602775793036966}
+  - component: {fileID: 6547472534402244543}
   m_Layer: 0
   m_Name: Orange Gem
   m_TagString: OrangeGem
@@ -111,3 +112,19 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.98, y: 0.98}
   m_EdgeRadius: 0
+--- !u!114 &6547472534402244543
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7989825611449385302}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6bbbf4d4f91198c4e893072e7545eb5b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gemScriptableObject: {fileID: 11400000, guid: e844772c3dd512a4f8a0a36159c860d8,
+    type: 2}
+  waitSeconds: 0.2
+  waitSecondsToMove: 0.2

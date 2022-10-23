@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Match3.Grid;
@@ -12,10 +13,10 @@ namespace Match3.Piece
         public int Row { get; set; }
         public int Column { get; set; }
         public int PreviousRow { get; set; }
-        public int GemBaseValue => gemBaseValue;
+        public int GemBaseValue => gemScriptableObject.gemBaseValue;
         
         [SerializeField]
-        private int gemBaseValue;
+        private GemScriptableObject gemScriptableObject;
         [Tooltip("Amount of seconds to wait before going back to last position when switched.")]
         [SerializeField]
         private float waitSeconds = 0.2f;
@@ -36,6 +37,11 @@ namespace Match3.Piece
         {
             Column = column;
             Row = row;
+        }
+
+        private void OnValidate()
+        {
+            GetComponent<SpriteRenderer>().sprite = gemScriptableObject.gemSprite;
         }
 
         private void FixedUpdate()

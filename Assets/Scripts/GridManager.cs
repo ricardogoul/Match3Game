@@ -14,8 +14,7 @@ namespace Match3.Grid
         private float waitSecondsToMove;
         [SerializeField]
         private float explosionEffectTimer;
-        
-        
+
         [SerializeField]
         private GameObject explosionEffect;
 

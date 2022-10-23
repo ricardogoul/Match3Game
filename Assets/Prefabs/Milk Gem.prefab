@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 2365813931758991379}
   - component: {fileID: 3204396773651284451}
   - component: {fileID: 8570715617736208730}
+  - component: {fileID: 4986728694197816336}
   m_Layer: 0
   m_Name: Milk Gem
   m_TagString: MilkGem
@@ -111,3 +112,19 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.98, y: 0.98}
   m_EdgeRadius: 0
+--- !u!114 &4986728694197816336
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5258702617579724458}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6bbbf4d4f91198c4e893072e7545eb5b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gemScriptableObject: {fileID: 11400000, guid: 3019a0ab8f4ea314fb8f2c13c357274b,
+    type: 2}
+  waitSeconds: 0.2
+  waitSecondsToMove: 0.2

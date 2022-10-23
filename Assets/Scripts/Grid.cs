@@ -12,11 +12,11 @@ namespace Match3.Grid
         public int GridRows => gridRows;
         public int GridColumns => gridColumns;
         
-        [SerializeField]
-        private int gridRows;
-        [SerializeField]
-        private int gridColumns;
-        [SerializeField]
+        
+        private int gridRows = 8;
+        
+        private int gridColumns = 6;
+        
         private int gridOffset;
         [SerializeField]
         private List<GameObject> gemPrefabs;
@@ -24,13 +24,11 @@ namespace Match3.Grid
         [SerializeField]
         private Transform gridTransform;
 
-        private void Start()
-        {
-            GemsGrid = new GameObject[GridRows, GridColumns];
-        }
 
         internal void BuildGrid()
         {
+            GemsGrid = new GameObject[GridRows, GridColumns];
+            
             for (int row = 0; row < GridRows; row++)
             {
                 for (int column = 0; column < GridColumns; column++)
@@ -93,10 +91,10 @@ namespace Match3.Grid
                    && GemsGrid[row, column - 2].CompareTag(gemToCheck.tag);
         }
 
-        internal void InstantiateGem(int column, int row, Vector2 gemPos, GameObject gemPrefab)
+        private void InstantiateGem(int column, int row, Vector2 gemPos, GameObject gemPrefab)
         {
             var gemObject = Instantiate(gemPrefab, gemPos, Quaternion.identity, gridTransform);
-            var gem = gemObject.AddComponent<Gem>();
+            var gem = gemObject.GetComponent<Gem>();
             gem.Constructor(column, row);
 
             GemsGrid[row, column] = gemObject;
