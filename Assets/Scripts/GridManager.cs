@@ -1,24 +1,13 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using Match3.Piece;
 using Match3.UI;
-using Match3.Sounds;
-using TMPro;
 
 namespace Match3.Grid
 {
-    public class GridManager : MonoBehaviour
+    [RequireComponent(typeof(Grid))]
+    public class GridManager : Grid
     {
-        [SerializeField]
-        private int gridRows;
-        [SerializeField]
-        private int gridColumns;
-        [SerializeField]
-        private int gridOffset;        
-        [SerializeField]
-        private int baseGemValue;
-
         [SerializeField]
         private float waitSeconds;
         [SerializeField]
@@ -26,103 +15,47 @@ namespace Match3.Grid
         [SerializeField]
         private float explosionEffectTimer;
         
-        [SerializeField]
-        private GameObject[] gemPrefabs;
+        
         [SerializeField]
         private GameObject explosionEffect;
-        [SerializeField]
-        private Transform gridTransform;
 
-        private GameObject[,] gemsGrid;
         private int streakValue = 1;
 
         private GameState currentState;
 
         private void Start()
         {
-            gemsGrid = new GameObject[gridRows, gridColumns];
+            ServiceLocator.Provide(this);
 
             BuildGrid();
-            currentState = GameState.cantMove;
-        }
-
-        private void BuildGrid()
-        {
-            for (int row = 0; row < gridRows; row++)
-            {
-                for(int column = 0; column < gridColumns; column++)
-                {
-                    Vector2 auxPos = new Vector2(column, (row*-1) + gridOffset);
-                    int gemNumber = Random.Range(0, gemPrefabs.Length);
-                    
-                    while (CheckForMatches(column, row, gemPrefabs[gemNumber]))
-                    {
-                        gemNumber = Random.Range(0, gemPrefabs.Length);
-                    }
-
-                    InstantiateGem(column, row, gemNumber, auxPos);
-                }
-            }
-        }
-
-        private void InstantiateGem(int column, int row, int gemNumber, Vector2 gemPos)
-        {
-            var gemObject = Instantiate(gemPrefabs[gemNumber], gemPos, Quaternion.identity, gridTransform);
-            var gem = gemObject.AddComponent<Gem>();
-            gem.Constructor(column, row, this);
-
-            gemsGrid[row, column] = gemObject;
-        }
-
-        private bool CheckForMatches(int column, int row, GameObject gemToCheck)
-        {
-            if (gemToCheck == null) return false;
-            if (row <= 1 && column <= 1) return false;
-            
-            return (row > 1 && CheckForMatchesOnColumn(column, row, gemToCheck))
-                   || (column > 1 && CheckForMatchesOnRow(column, row, gemToCheck));
-        }
-
-        private bool CheckForMatchesOnColumn(int column, int row, GameObject gemToCheck)
-        {
-            if (gemsGrid[row - 1, column] == null || gemsGrid[row - 2, column] == null) return false;
-            
-            return gemsGrid[row - 1, column].CompareTag(gemToCheck.tag) 
-                   && gemsGrid[row - 2, column].CompareTag(gemToCheck.tag);
-        }
-
-        private bool CheckForMatchesOnRow(int column, int row, GameObject gemToCheck)
-        {
-            if (gemsGrid[row, column - 1] == null || gemsGrid[row, column - 2] == null) return false;
-            
-            return gemsGrid[row, column - 1].CompareTag(gemToCheck.tag) 
-                   && gemsGrid[row, column - 2].CompareTag(gemToCheck.tag);
+            currentState = GameState.CantMove;
         }
 
         private void DestroyMatches(int row, int column)
         {
-            if (!gemsGrid[row, column].GetComponent<Gem>().HasMatch) return;
+            var gem = GemsGrid[row, column].GetComponent<Gem>();
+            if (!gem.HasMatch) return;
             
             DisplayExplosionEffect(row, column);
-            Destroy(gemsGrid[row, column]);
-            Score.HandleIncreaseScoreDelegate?.Invoke(baseGemValue * streakValue);
-            gemsGrid[row, column] = null;
+            Destroy(GemsGrid[row, column]);
+            Score.HandleIncreaseScoreDelegate?.Invoke(gem.GemBaseValue * streakValue);
+            GemsGrid[row, column] = null;
         }
 
         private void DisplayExplosionEffect(int row, int column)
         {
-            GameObject explosionEffect = Instantiate(this.explosionEffect, gemsGrid[row, column].transform.position + new Vector3(0,0,-1), Quaternion.identity);
+            GameObject explosionEffect = Instantiate(this.explosionEffect, GemsGrid[row, column].transform.position + new Vector3(0,0,-1), Quaternion.identity);
             Destroy(explosionEffect, explosionEffectTimer);
             ServiceLocator.GetSoundManager().PlayExplodeGemSound();
         }
 
         public void FoundMatch()
         {
-            for (int row = 0; row < gridRows; row++)
+            for (int row = 0; row < GridRows; row++)
             {
-                for (int column = 0; column < gridColumns; column++)
+                for (int column = 0; column < GridColumns; column++)
                 {
-                    if (gemsGrid[row, column] != null)
+                    if (GemsGrid[row, column] != null)
                     {
                         DestroyMatches(row , column);
                     }
@@ -132,30 +65,13 @@ namespace Match3.Grid
             StartCoroutine(DropRow());
         }
 
-        private void SpawnGems()
-        {
-            for (int row = 0; row < gridRows; row++)
-            {
-                for (int column = 0; column < gridColumns; column++)
-                {
-                    if(gemsGrid[row, column] == null)
-                    {
-                        Vector2 auxPos = new Vector2(column, (row*-1) + gridOffset);
-                        int gemNumber = Random.Range(0, gemPrefabs.Length);
-
-                        InstantiateGem(column, row, gemNumber, auxPos);
-                    }
-                }
-            }
-        }
-
         
 
         private void SwitchGemsForDeadlockCheck(int row, int column, Vector2 direction)
         {
-            GameObject holder = gemsGrid[row + (int)direction.y, column + (int)direction.x];
-            gemsGrid[row + (int)direction.y, column + (int)direction.x] = gemsGrid[row, column];
-            gemsGrid[row, column] = holder;
+            GameObject holder = GemsGrid[row + (int)direction.y, column + (int)direction.x];
+            GemsGrid[row + (int)direction.y, column + (int)direction.x] = GemsGrid[row, column];
+            GemsGrid[row, column] = holder;
         }        
 
         private bool SwitchAndCheckForDeadlock(int row, int column, Vector2 direction)
@@ -174,13 +90,13 @@ namespace Match3.Grid
 
         private bool IsDeadLocked()
         {
-            for (int row = 0; row < gridRows; row++)
+            for (int row = 0; row < GridRows; row++)
             {
-                for (int column = 0; column < gridColumns; column++)
+                for (int column = 0; column < GridColumns; column++)
                 {
-                    if (gemsGrid[row, column] != null)
+                    if (GemsGrid[row, column] != null)
                     {
-                        if (column < gridColumns - 1)
+                        if (column < GridColumns - 1)
                         {
                             if(SwitchAndCheckForDeadlock(row, column, Vector2.right))
                             {
@@ -188,7 +104,7 @@ namespace Match3.Grid
                             }
                         }
 
-                        if (row < gridRows - 1)
+                        if (row < GridRows - 1)
                         {
                             if (SwitchAndCheckForDeadlock(row, column, Vector2.up))
                             {
@@ -203,69 +119,32 @@ namespace Match3.Grid
 
         public void ShuffleGems()
         {
-            List<GameObject> gemsToShuffle = new List<GameObject>();
+            ShuffleGrid();
 
-            for (int i = 0; i < gridRows; i++)
-            {
-                for (int j = 0; j < gridColumns; j++)
-                {
-                    if (gemsGrid[i, j] != null)
-                    {
-                        gemsToShuffle.Add(gemsGrid[i, j]);
-                    }
-                }
-            }
-
-            for (int i = 0; i < gridRows; i++)
-            {
-                for (int j = 0; j < gridColumns; j++)
-                {
-                    int gemNumber = Random.Range(0, gemsToShuffle.Count);
-                    int iterations = 0;
-
-                    while (CheckForMatches(j, i, gemsToShuffle[gemNumber]) && iterations < 50)
-                    {
-                        gemNumber = Random.Range(0, gemsToShuffle.Count);
-                        iterations++;
-                    }
-                    iterations = 0;
-
-                    Gem gem = gemsToShuffle[gemNumber].GetComponent<Gem>();
-                    gem.Column = j;
-                    gem.Row = i;
-                    gemsGrid[i, j] = gemsToShuffle[gemNumber];
-                    gemsToShuffle.Remove(gemsToShuffle[gemNumber]);
-                }
-            }
-
-            if (currentState == GridManager.GameState.move)
-            {
+            if (currentState == GameState.Move)
                 ServiceLocator.GetSoundManager().PlaySwapGemsSound();
-            }
 
             if (IsDeadLocked())
-            {
-                Invoke("ShuffleGems", 0.7f);
-            }
+                Invoke(nameof(ShuffleGems), 0.7f);
         }
 
         private IEnumerator DropRow()
         {
             int nullSpots = 0;
 
-            for (int j = 0; j < gridColumns; j++)
+            for (int j = 0; j < GridColumns; j++)
             {
-                for (int i = gridRows - 1; i >= 0; i--)
+                for (int i = GridRows - 1; i >= 0; i--)
                 {
-                    if (gemsGrid[i, j] == null)
+                    if (GemsGrid[i, j] == null)
                     {
                         nullSpots++;
                     }
                     else if (nullSpots > 0)
                     {
-                        gemsGrid[i, j].GetComponent<Gem>().PreviousRow += nullSpots;
-                        gemsGrid[i, j].GetComponent<Gem>().Row += nullSpots;
-                        gemsGrid[i, j] = null;
+                        GemsGrid[i, j].GetComponent<Gem>().PreviousRow += nullSpots;
+                        GemsGrid[i, j].GetComponent<Gem>().Row += nullSpots;
+                        GemsGrid[i, j] = null;
                     }
                 }
                 nullSpots = 0;
@@ -296,29 +175,13 @@ namespace Match3.Grid
 
             streakValue = 1;
             yield return new WaitForSeconds(waitSecondsToMove * 2);
-            currentState = GameState.move;
+            currentState = GameState.Move;
         }
 
         public enum GameState
         {
-            cantMove,
-            move
-        }
-
-        public GameObject[,] GemsGrid
-        {
-            get { return gemsGrid; }
-            set { gemsGrid = value; }
-        }
-
-        public int GridColumns
-        {
-            get { return gridColumns; }
-        }
-
-        public int GridRows
-        {
-            get { return gridRows; }
+            CantMove,
+            Move
         }
 
         public GameState CurrentState

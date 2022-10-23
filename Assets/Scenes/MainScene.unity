@@ -4292,6 +4292,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2058325877}
   - component: {fileID: 2058325878}
+  - component: {fileID: 2058325879}
   m_Layer: 0
   m_Name: GridManager
   m_TagString: Untagged
@@ -4326,13 +4327,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9316d59b35cb08844a3bb2c062f5e1e8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gridRows: 8
-  gridColumns: 6
+  gridRows: 0
+  gridColumns: 0
   gridOffset: 15
-  baseGemValue: 20
-  waitSeconds: 0.2
-  waitSecondsToMove: 0
-  explosionEffectTimer: 0.5
   gemPrefabs:
   - {fileID: 6305299529821344845, guid: d6bbd3a15bf05ca41af8a3cd7f0e00ef, type: 3}
   - {fileID: 6548593139807923845, guid: 6274c69a0f0e54f42b1994285b9e37ce, type: 3}
@@ -4341,8 +4338,36 @@ MonoBehaviour:
   - {fileID: 5020524866109371118, guid: 02af4768ffabb594da5d0a99af40ad59, type: 3}
   - {fileID: 5258702617579724458, guid: 91fb19cac6eeee04bb60bbe6b9d65d00, type: 3}
   - {fileID: 7989825611449385302, guid: b26b69972a2ee314bbce14fff9f6c43e, type: 3}
+  gridTransform: {fileID: 1846256611}
+  baseGemValue: 20
+  waitSeconds: 0.2
+  waitSecondsToMove: 0
+  explosionEffectTimer: 0.5
   explosionEffect: {fileID: 1043883732793073874, guid: b41a1742df5a3bd42896c151b8d193be,
     type: 3}
+--- !u!114 &2058325879
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2058325876}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b851da4229c729f47b517c99a418d2e8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gridRows: 8
+  gridColumns: 6
+  gridOffset: 15
+  gemPrefabs:
+  - {fileID: 6305299529821344845, guid: d6bbd3a15bf05ca41af8a3cd7f0e00ef, type: 3}
+  - {fileID: 6548593139807923845, guid: 6274c69a0f0e54f42b1994285b9e37ce, type: 3}
+  - {fileID: 4747714499894329094, guid: 7d3aa85a64dbe3f40bc96aa65de90536, type: 3}
+  - {fileID: 1842654665555148304, guid: be4f8b92e0b763347b63e587fb1b6e34, type: 3}
+  - {fileID: 5020524866109371118, guid: 02af4768ffabb594da5d0a99af40ad59, type: 3}
+  - {fileID: 5258702617579724458, guid: 91fb19cac6eeee04bb60bbe6b9d65d00, type: 3}
+  - {fileID: 7989825611449385302, guid: b26b69972a2ee314bbce14fff9f6c43e, type: 3}
   gridTransform: {fileID: 1846256611}
 --- !u!1 &2099126397
 GameObject:

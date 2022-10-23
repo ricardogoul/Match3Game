@@ -12,7 +12,10 @@ namespace Match3.Piece
         public int Row { get; set; }
         public int Column { get; set; }
         public int PreviousRow { get; set; }
+        public int GemBaseValue => gemBaseValue;
         
+        [SerializeField]
+        private int gemBaseValue;
         [Tooltip("Amount of seconds to wait before going back to last position when switched.")]
         [SerializeField]
         private float waitSeconds = 0.2f;
@@ -29,13 +32,10 @@ namespace Match3.Piece
 
         private Gem swappedGem;
 
-        private GridManager gridManager;
-
-        public void Constructor(int column, int row, GridManager gridManager)
+        public void Constructor(int column, int row)
         {
             Column = column;
             Row = row;
-            this.gridManager = gridManager;
         }
 
         private void FixedUpdate()
@@ -55,13 +55,13 @@ namespace Match3.Piece
 
         private void OnMouseDown()
         {
-            if (gridManager.CurrentState != GridManager.GameState.move) return;
+            if (ServiceLocator.GetGridManager().CurrentState != GridManager.GameState.Move) return;
             GetMouseClick();
         }
 
         private void OnMouseUp()
         {
-            if (gridManager.CurrentState != GridManager.GameState.move) return;
+            if (ServiceLocator.GetGridManager().CurrentState != GridManager.GameState.Move) return;
             GetMouseRelease();
             CheckForMovement();
         }
@@ -100,7 +100,7 @@ namespace Match3.Piece
             {
                 switch (swipeDirection.x)
                 {
-                    case > 0 when Column < gridManager.GridColumns - 1:
+                    case > 0 when Column < ServiceLocator.GetGridManager().GridColumns - 1:
                         MoveRight();
                         break;
                     case < 0 when Column > 0:
@@ -115,17 +115,17 @@ namespace Match3.Piece
                     case > 0.4f when Row > 0:
                         MoveUp();
                         break;
-                    case < 0.4f when Row < gridManager.GridRows - 1:
+                    case < 0.4f when Row < ServiceLocator.GetGridManager().GridRows - 1:
                         MoveDown();
                         break;
                 }
             } 
 
-            if (gridManager.CurrentState == GridManager.GameState.move)
+            if (ServiceLocator.GetGridManager().CurrentState == GridManager.GameState.Move)
             {
                 ServiceLocator.GetSoundManager().PlaySwapGemsSound();
             }
-            gridManager.CurrentState = GridManager.GameState.cantMove;
+            ServiceLocator.GetGridManager().CurrentState = GridManager.GameState.CantMove;
             StartCoroutine(ProcessMovement());
         }
         
@@ -136,28 +136,28 @@ namespace Match3.Piece
         
         private void MoveRight()
         {
-            swappedGem = gridManager.GemsGrid[Row, Column + 1].GetComponent<Gem>();
+            swappedGem = ServiceLocator.GetGridManager().GemsGrid[Row, Column + 1].GetComponent<Gem>();
             swappedGem.Column -= 1;
             Column += 1;
         }
 
         private void MoveLeft()
         {
-            swappedGem = gridManager.GemsGrid[Row, Column - 1].GetComponent<Gem>();
+            swappedGem = ServiceLocator.GetGridManager().GemsGrid[Row, Column - 1].GetComponent<Gem>();
             swappedGem.Column += 1;
             Column -= 1;
         }
 
         private void MoveUp()
         {
-            swappedGem = gridManager.GemsGrid[Row - 1, Column].GetComponent<Gem>();
+            swappedGem = ServiceLocator.GetGridManager().GemsGrid[Row - 1, Column].GetComponent<Gem>();
             swappedGem.Row += 1;
             Row -= 1;
         }
 
         private void MoveDown()
         {
-            swappedGem = gridManager.GemsGrid[Row + 1, Column].GetComponent<Gem>();
+            swappedGem = ServiceLocator.GetGridManager().GemsGrid[Row + 1, Column].GetComponent<Gem>();
             swappedGem.Row -= 1;
             Row += 1;
         }
@@ -173,9 +173,9 @@ namespace Match3.Piece
                 currentPosition = Vector2.Lerp(currentPosition, auxPosition, TimeToLerp);
                 transform.position = currentPosition;
 
-                if (gridManager.GemsGrid[Row, Column] != gameObject)
+                if (ServiceLocator.GetGridManager().GemsGrid[Row, Column] != gameObject)
                 {
-                    gridManager.GemsGrid[Row, Column] = gameObject;
+                    ServiceLocator.GetGridManager().GemsGrid[Row, Column] = gameObject;
                 }
 
                 ServiceLocator.GetFindMatches().FindMatchesOnGrid();
@@ -199,9 +199,9 @@ namespace Match3.Piece
                 currentPosition = Vector2.Lerp(currentPosition, auxPosition, TimeToLerp);
                 transform.position = currentPosition;
 
-                if (gridManager.GemsGrid[Row, Column] != gameObject)
+                if (ServiceLocator.GetGridManager().GemsGrid[Row, Column] != gameObject)
                 {
-                    gridManager.GemsGrid[Row, Column] = gameObject;
+                    ServiceLocator.GetGridManager().GemsGrid[Row, Column] = gameObject;
                 }
 
                 ServiceLocator.GetFindMatches().FindMatchesOnGrid();
@@ -222,26 +222,26 @@ namespace Match3.Piece
             {
                 if (FoundMatchAfterMovement())
                 {
-                    gridManager.FoundMatch();
+                    ServiceLocator.GetGridManager().FoundMatch();
                 }
                 else
                 {
                     ReturnToPreviousPosition();
                     
-                    if (gridManager.CurrentState == GridManager.GameState.move)
+                    if (ServiceLocator.GetGridManager().CurrentState == GridManager.GameState.Move)
                     {
                         ServiceLocator.GetSoundManager().PlaySwapGemsSound();
                     }
                     
                     yield return new WaitForSeconds(waitSecondsToMove);
-                    gridManager.CurrentState = GridManager.GameState.move;
+                    ServiceLocator.GetGridManager().CurrentState = GridManager.GameState.Move;
                 }
 
                 swappedGem = null;
             }
             else
             {
-                gridManager.CurrentState = GridManager.GameState.move;
+                ServiceLocator.GetGridManager().CurrentState = GridManager.GameState.Move;
             }
         }
         

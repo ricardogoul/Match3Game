@@ -65,7 +65,7 @@ namespace Match3.UI
         private void ResetScore()
         {
             score = 0;
-            scorePresenter.UpdateScoreUIEvent?.Invoke(score.ToString(), score / scoreGoal);
+            ScoreGoalReached = false;
         }
 
         public void SetNextLevel()

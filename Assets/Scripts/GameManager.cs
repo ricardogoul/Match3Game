@@ -50,6 +50,7 @@ namespace Match3.Grid
 
         public void StartGame()
         {
+            CurrentLevel = 1;
             SetGameUp();
             score.SetFirstLevel();
         }
@@ -59,7 +60,7 @@ namespace Match3.Grid
             UnfreezeGame();
             playingGame = true;
             checkRoundFinished = false;
-            gridManager.CurrentState = GridManager.GameState.move;
+            gridManager.CurrentState = GridManager.GameState.Move;
             ServiceLocator.GetSoundManager().PlayBackgroundMusic();
             timer.TimerSetup();
         }
@@ -98,7 +99,7 @@ namespace Match3.Grid
 
         private void FreezeGame()
         {
-            gridManager.CurrentState = GridManager.GameState.cantMove;
+            gridManager.CurrentState = GridManager.GameState.CantMove;
             Time.timeScale = 0;
         }
 

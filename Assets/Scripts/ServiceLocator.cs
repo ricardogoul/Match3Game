@@ -12,10 +12,12 @@ public class ServiceLocator : MonoBehaviour
     private static GameManager gameManager;
     private static SoundManager soundManager;
     private static FindMatches findMatches;
+    private static GridManager gridManager;
 
     public static GameManager GetGameManager() => gameManager;
     public static SoundManager GetSoundManager() => soundManager;
     public static FindMatches GetFindMatches() => findMatches;
+    public static GridManager GetGridManager() => gridManager;
     
     public static void Provide(GameManager service)
     { 
@@ -33,5 +35,11 @@ public class ServiceLocator : MonoBehaviour
     {
         if(findMatches != null) return;
         findMatches = service;
+    }
+
+    public static void Provide(GridManager service)
+    {
+        if(gridManager != null) return;
+        gridManager = service;
     }
 }
