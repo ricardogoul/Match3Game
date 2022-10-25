@@ -5,21 +5,13 @@ using Match3.UI;
 
 namespace Match3.Grid
 {
-    [RequireComponent(typeof(Grid))]
     public class GridManager : Grid
     {
-        [SerializeField]
-        private float waitSeconds;
-        [SerializeField]
-        private float waitSecondsToMove;
-        [SerializeField]
-        private float explosionEffectTimer;
-
-        [SerializeField]
-        private GameObject explosionEffect;
+        private float WaitForSeconds => gameSettingsScriptableObject.waitForSeconds;
+        private float ExplosionEffectTimer => gameSettingsScriptableObject.explosionEffectTimer;
+        private GameObject ExplosionEffect => gameSettingsScriptableObject.explosionEffect;
 
         private int streakValue = 1;
-
         private GameState currentState;
 
         private void Start()
@@ -43,8 +35,8 @@ namespace Match3.Grid
 
         private void DisplayExplosionEffect(int row, int column)
         {
-            GameObject explosionEffect = Instantiate(this.explosionEffect, GemsGrid[row, column].transform.position + new Vector3(0,0,-1), Quaternion.identity);
-            Destroy(explosionEffect, explosionEffectTimer);
+            GameObject explosionEffect = Instantiate(ExplosionEffect, GemsGrid[row, column].transform.position + new Vector3(0,0,-1), Quaternion.identity);
+            Destroy(explosionEffect, ExplosionEffectTimer);
             ServiceLocator.GetSoundManager().PlayExplodeGemSound();
         }
 
@@ -149,7 +141,7 @@ namespace Match3.Grid
                 nullSpots = 0;
             }
 
-            yield return new WaitForSeconds(waitSeconds);
+            yield return new WaitForSeconds(WaitForSeconds);
 
             StartCoroutine(SpawnGemsCo());
         }
@@ -157,13 +149,13 @@ namespace Match3.Grid
         private IEnumerator SpawnGemsCo()
         {
             SpawnGems();
-            yield return new WaitForSeconds(waitSeconds);
+            yield return new WaitForSeconds(WaitForSeconds);
 
             while (ServiceLocator.GetFindMatches().GemsMatchedOnGrid())
             {
                 streakValue ++;
                 FoundMatch();
-                yield return new WaitForSeconds(waitSecondsToMove * 4);
+                yield return new WaitForSeconds(WaitForSeconds * 4);
             }
 
             if (IsDeadLocked())
@@ -173,7 +165,7 @@ namespace Match3.Grid
             }
 
             streakValue = 1;
-            yield return new WaitForSeconds(waitSecondsToMove * 2);
+            yield return new WaitForSeconds(WaitForSeconds * 2);
             currentState = GameState.Move;
         }
 

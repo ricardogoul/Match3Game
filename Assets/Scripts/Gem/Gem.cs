@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections;
 using UnityEngine;
 using Match3.Grid;
-using Match3.Sounds;
 
 namespace Match3.Piece
 {

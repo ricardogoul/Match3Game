@@ -9,21 +9,16 @@ namespace Match3.Grid
 {
     public class Grid : MonoBehaviour
     {
-        public int GridRows => gridRows;
-        public int GridColumns => gridColumns;
-        
-        
-        private int gridRows = 8;
-        
-        private int gridColumns = 6;
-        
-        private int gridOffset;
-        [SerializeField]
-        private List<GameObject> gemPrefabs;
+        public int GridRows => gameSettingsScriptableObject.gridRows;
+        public int GridColumns => gameSettingsScriptableObject.gridColumns;
+        private int GridOffset => gameSettingsScriptableObject.gridOffset;
+        private List<GameObject> GemPrefabs => gameSettingsScriptableObject.gemPrefabs;
+
         public GameObject[,] GemsGrid { get; private set; }
         [SerializeField]
         private Transform gridTransform;
-
+        [SerializeField]
+        internal GameSettingsScriptableObject gameSettingsScriptableObject;
 
         internal void BuildGrid()
         {
@@ -33,15 +28,15 @@ namespace Match3.Grid
             {
                 for (int column = 0; column < GridColumns; column++)
                 {
-                    Vector2 auxPos = new Vector2(column, (row * -1) + gridOffset);
-                    int gemNumber = Random.Range(0, gemPrefabs.Count);
+                    Vector2 auxPos = new Vector2(column, (row * -1) + GridOffset);
+                    int gemNumber = Random.Range(0, GemPrefabs.Count);
 
-                    while (CheckForMatches(column, row, gemPrefabs[gemNumber]))
+                    while (CheckForMatches(column, row, GemPrefabs[gemNumber]))
                     {
-                        gemNumber = Random.Range(0, gemPrefabs.Count);
+                        gemNumber = Random.Range(0, GemPrefabs.Count);
                     }
 
-                    InstantiateGem(column, row, auxPos, gemPrefabs[gemNumber]);
+                    InstantiateGem(column, row, auxPos, GemPrefabs[gemNumber]);
                 }
             }
         }
@@ -135,10 +130,10 @@ namespace Match3.Grid
                 {
                     if (GemsGrid[row, column] != null) continue;
                     
-                    var auxPos = new Vector2(column, (row*-1) + gridOffset);
-                    var gemNumber = Random.Range(0, gemPrefabs.Count);
+                    var auxPos = new Vector2(column, (row*-1) + GridOffset);
+                    var gemNumber = Random.Range(0, GemPrefabs.Count);
 
-                    InstantiateGem(column, row, auxPos, gemPrefabs[gemNumber]);
+                    InstantiateGem(column, row, auxPos, GemPrefabs[gemNumber]);
                 }
             }
         }
