@@ -16,8 +16,8 @@ MonoBehaviour:
   gridColumns: 6
   gridOffset: 15
   gemPrefabs:
-  - {fileID: 6305299529821344845, guid: d6bbd3a15bf05ca41af8a3cd7f0e00ef, type: 3}
-  - {fileID: 6548593139807923845, guid: 6274c69a0f0e54f42b1994285b9e37ce, type: 3}
+  - {fileID: 3168933981191089011, guid: de110ff9a3daf474a967833d9789691c, type: 3}
+  - {fileID: 210043481482304671, guid: 83538628cb0d6f846a7aea92befc1fc2, type: 3}
   - {fileID: 4747714499894329094, guid: 7d3aa85a64dbe3f40bc96aa65de90536, type: 3}
   - {fileID: 1842654665555148304, guid: be4f8b92e0b763347b63e587fb1b6e34, type: 3}
   - {fileID: 5020524866109371118, guid: 02af4768ffabb594da5d0a99af40ad59, type: 3}
