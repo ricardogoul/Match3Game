@@ -1,29 +1,28 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using Match3.Grid;
 
 namespace Match3.UI
 {
     public class MenuController : MonoBehaviour
     {
         [SerializeField]
-        private Animator _menuAnim;
+        private Animator menuAnim;
         [SerializeField]
-        private Animator _innerMenuAnim;
+        private Animator innerMenuAnim;
         [SerializeField]
-        private Animator _levelClearedAnim;
+        private Animator levelClearedAnim;
         [SerializeField]
-        private Animator _failedLevelAnim;
+        private Animator failedLevelAnim;
 
         [SerializeField]
-        private Text _nextLevelButtonText;
+        private TextMeshProUGUI nextLevelButtonText;
         [SerializeField]
-        private Text _nextLevelMessage;
+        private TextMeshProUGUI nextLevelMessage;
         [SerializeField]
-        private Text _failedAtLevelText;
+        private TextMeshProUGUI failedAtLevelText;
+
+        private static readonly int PlayGame = Animator.StringToHash("PlayGame");
 
         private void Start()
         {
@@ -32,33 +31,32 @@ namespace Match3.UI
 
         public void StartButton()
         {
-            if (_menuAnim != null && _innerMenuAnim != null)
-            {
-                _menuAnim.SetTrigger("PlayGame");
-                _innerMenuAnim.SetTrigger("PlayGame");
+            if (menuAnim == null || innerMenuAnim == null) return;
+            
+            menuAnim.SetTrigger(PlayGame);
+            innerMenuAnim.SetTrigger(PlayGame);
 
-                ServiceLocator.GetGameManager().StartGame();
-                _nextLevelButtonText.text = "Level " + (ServiceLocator.GetGameManager().CurrentLevel + 1).ToString();
-                _nextLevelMessage.text = "Level " + ServiceLocator.GetGameManager().CurrentLevel.ToString() + " Cleared!";
-            }
+            ServiceLocator.GetGameManager().StartGame();
+            nextLevelButtonText.text = "Level " + (ServiceLocator.GetGameManager().CurrentLevel + 1).ToString();
+            nextLevelMessage.text = "Level " + ServiceLocator.GetGameManager().CurrentLevel.ToString() + " Cleared!";
         }
 
         public void NextLevelButton()
         {
-            _levelClearedAnim.SetTrigger("NextLevel");
+            levelClearedAnim.SetTrigger("NextLevel");
             ServiceLocator.GetGameManager().StartNextLevel();
             Invoke("UpdateTexts", 1);
         }
 
         private void UpdateTexts()
         {
-            _nextLevelButtonText.text = "Level " + (ServiceLocator.GetGameManager().CurrentLevel + 1).ToString();
-            _nextLevelMessage.text = "Level " + ServiceLocator.GetGameManager().CurrentLevel.ToString() + " Cleared!";
+            nextLevelButtonText.text = "Level " + (ServiceLocator.GetGameManager().CurrentLevel + 1).ToString();
+            nextLevelMessage.text = "Level " + ServiceLocator.GetGameManager().CurrentLevel.ToString() + " Cleared!";
         }
 
         public void MenuButton()
         {
-            _levelClearedAnim.SetTrigger("NextLevel");            
+            levelClearedAnim.SetTrigger("NextLevel");            
             Invoke("CallMenu", 1f);
             ServiceLocator.GetGameManager().SetGameUp();
 
@@ -66,26 +64,26 @@ namespace Match3.UI
 
         public void FailMenuButton()
         {
-            _failedLevelAnim.SetTrigger("CallMenu");
+            failedLevelAnim.SetTrigger("CallMenu");
             Invoke("CallMenu", 1f);
             ServiceLocator.GetGameManager().SetGameUp();
         }
 
         public void FailedRound()
         {
-            _failedAtLevelText.text = "You lost at level " + ServiceLocator.GetGameManager().CurrentLevel + ".";
-            _failedLevelAnim.SetTrigger("LevelCleared");
+            failedAtLevelText.text = "You lost at level " + ServiceLocator.GetGameManager().CurrentLevel + ".";
+            failedLevelAnim.SetTrigger("LevelCleared");
         }
 
         public void ClearedLevel()
         {
-            _levelClearedAnim.SetTrigger("LevelCleared");
+            levelClearedAnim.SetTrigger("LevelCleared");
         }
         
         private void CallMenu()
         {
-            _menuAnim.SetTrigger("OpenMenu");
-            _innerMenuAnim.SetTrigger("OpenMenu");
+            menuAnim.SetTrigger("OpenMenu");
+            innerMenuAnim.SetTrigger("OpenMenu");
         }
     }
 }

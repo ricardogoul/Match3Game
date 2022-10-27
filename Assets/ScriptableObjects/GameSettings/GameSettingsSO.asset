@@ -18,11 +18,11 @@ MonoBehaviour:
   gemPrefabs:
   - {fileID: 3168933981191089011, guid: de110ff9a3daf474a967833d9789691c, type: 3}
   - {fileID: 210043481482304671, guid: 83538628cb0d6f846a7aea92befc1fc2, type: 3}
-  - {fileID: 4747714499894329094, guid: 7d3aa85a64dbe3f40bc96aa65de90536, type: 3}
-  - {fileID: 1842654665555148304, guid: be4f8b92e0b763347b63e587fb1b6e34, type: 3}
-  - {fileID: 5020524866109371118, guid: 02af4768ffabb594da5d0a99af40ad59, type: 3}
-  - {fileID: 5258702617579724458, guid: 91fb19cac6eeee04bb60bbe6b9d65d00, type: 3}
-  - {fileID: 7989825611449385302, guid: b26b69972a2ee314bbce14fff9f6c43e, type: 3}
+  - {fileID: 1014725383759397748, guid: 7d3aa85a64dbe3f40bc96aa65de90536, type: 3}
+  - {fileID: 5322854964303004442, guid: be4f8b92e0b763347b63e587fb1b6e34, type: 3}
+  - {fileID: 6021025970296844496, guid: 02af4768ffabb594da5d0a99af40ad59, type: 3}
+  - {fileID: 8299643232008156263, guid: 91fb19cac6eeee04bb60bbe6b9d65d00, type: 3}
+  - {fileID: 1593418364144667479, guid: b26b69972a2ee314bbce14fff9f6c43e, type: 3}
   explosionEffect: {fileID: 1043883732793073874, guid: b41a1742df5a3bd42896c151b8d193be,
     type: 3}
   waitForSeconds: 0.2
