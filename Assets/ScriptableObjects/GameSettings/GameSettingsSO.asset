@@ -27,3 +27,4 @@ MonoBehaviour:
     type: 3}
   waitForSeconds: 0.2
   explosionEffectTimer: 0.5
+  timeToShuffle: 0.7

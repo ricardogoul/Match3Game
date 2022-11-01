@@ -15,5 +15,6 @@ public class GameSettingsScriptableObject : ScriptableObject
     [Space]
     public float waitForSeconds;
     public float explosionEffectTimer;
+    public float timeToShuffle;
 
 }

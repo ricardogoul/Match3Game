@@ -26,18 +26,44 @@ namespace Match3.Grid {
         {
             StartCoroutine(FindMatchesOnGridCo());
         }
+        
+        private IEnumerator FindMatchesOnGridCo()
+        {
+            yield return new WaitForSeconds(_waitSeconds);
+            
+            gridManager.LoopThruGrid(DoFindMatchesOnGrid);
+        }
+
+        private void DoFindMatchesOnGrid(int column, int row)
+        {
+            var currentGem = gridManager.GemsGrid[row, column];
+            if (currentGem == null) return;
+            
+            if (column > 0 && column < gridManager.GridColumns - 1)
+            {
+                var leftGem = gridManager.GemsGrid[row, column - 1];
+                var rightGem = gridManager.GemsGrid[row, column + 1];
+
+                CompareGems(currentGem, leftGem, rightGem);
+            }
+
+            if (row > 0 && row < gridManager.GridRows - 1)
+            {
+                var upperGem = gridManager.GemsGrid[row - 1, column];
+                var lowerGem = gridManager.GemsGrid[row + 1, column];
+
+                CompareGems(currentGem, upperGem, lowerGem);
+            }
+        }
 
         private void CompareGems(GameObject currentGem, GameObject gem1, GameObject gem2)
         {
-            if (gem1 != null && gem2 != null)
-            {
-                if (gem1.CompareTag(currentGem.tag) && gem2.CompareTag(currentGem.tag))
-                {
-                    gem1.GetComponent<Gem>().HasMatch = true;
-                    gem2.GetComponent<Gem>().HasMatch = true;
-                    currentGem.GetComponent<Gem>().HasMatch = true;
-                }
-            }
+            if (gem1 == null || gem2 == null) return;
+            if (!gem1.CompareTag(currentGem.tag) || !gem2.CompareTag(currentGem.tag)) return;
+            
+            gem1.GetComponent<Gem>().HasMatch = true;
+            gem2.GetComponent<Gem>().HasMatch = true;
+            currentGem.GetComponent<Gem>().HasMatch = true;
         }
 
         public bool CheckForMatches()
@@ -46,27 +72,26 @@ namespace Match3.Grid {
             {
                 for (int j = 0; j < gridManager.GridColumns; j++)
                 {
-                    if (gridManager.GemsGrid[i, j] != null)
+                    if (gridManager.GemsGrid[i, j] == null) continue;
+                    
+                    if (i < gridManager.GridRows - 2)
                     {
-                        if (i < gridManager.GridRows - 2)
+                        if (gridManager.GemsGrid[i + 1, j] != null && gridManager.GemsGrid[i + 2, j] != null)
                         {
-                            if (gridManager.GemsGrid[i + 1, j] != null && gridManager.GemsGrid[i + 2, j] != null)
+                            if (gridManager.GemsGrid[i + 1, j].CompareTag(gridManager.GemsGrid[i, j].tag) && gridManager.GemsGrid[i + 2, j].CompareTag(gridManager.GemsGrid[i, j].tag))
                             {
-                                if (gridManager.GemsGrid[i + 1, j].CompareTag(gridManager.GemsGrid[i, j].tag) && gridManager.GemsGrid[i + 2, j].CompareTag(gridManager.GemsGrid[i, j].tag))
-                                {
-                                    return true;
-                                }
+                                return true;
                             }
                         }
+                    }
 
-                        if (j < gridManager.GridColumns - 2)
+                    if (j < gridManager.GridColumns - 2)
+                    {
+                        if (gridManager.GemsGrid[i, j + 1] != null && gridManager.GemsGrid[i, j + 2] != null)
                         {
-                            if (gridManager.GemsGrid[i, j + 1] != null && gridManager.GemsGrid[i, j + 2] != null)
+                            if (gridManager.GemsGrid[i, j + 1].CompareTag(gridManager.GemsGrid[i, j].tag) && gridManager.GemsGrid[i, j + 2].CompareTag(gridManager.GemsGrid[i, j].tag))
                             {
-                                if (gridManager.GemsGrid[i, j + 1].CompareTag(gridManager.GemsGrid[i, j].tag) && gridManager.GemsGrid[i, j + 2].CompareTag(gridManager.GemsGrid[i, j].tag))
-                                {
-                                    return true;
-                                }
+                                return true;
                             }
                         }
                     }
@@ -75,57 +100,16 @@ namespace Match3.Grid {
 
             return false;
         }
-
-        
 
         public bool GemsMatchedOnGrid()
         {
-            for (int i = 0; i < gridManager.GridRows; i++)
-            {
-                for (int j = 0; j < gridManager.GridColumns; j++)
-                {
-                    if (gridManager.GemsGrid[i, j] != null)
-                    {
-                        if (gridManager.GemsGrid[i, j].GetComponent<Gem>().HasMatch)
-                        {
-                            return true;
-                        }
-                    }
-                }
-            }
-
-            return false;
+            var result = gridManager.LoopThruGrid(HasMatchesOnGrid);
+            return result;
         }
-
-        private IEnumerator FindMatchesOnGridCo()
+        private bool HasMatchesOnGrid(int column, int row)
         {
-            yield return new WaitForSeconds(_waitSeconds);
-            for (int i = 0; i < gridManager.GridRows; i++)
-            {
-                for (int j = 0; j < gridManager.GridColumns; j++)
-                {
-                    GameObject currentGem = gridManager.GemsGrid[i, j];
-
-                    if (currentGem != null)
-                    {
-                        if (j > 0 && j < gridManager.GridColumns - 1)
-                        {
-                            GameObject leftGem = gridManager.GemsGrid[i, j - 1];
-                            GameObject rightGem = gridManager.GemsGrid[i, j + 1];
-
-                            CompareGems(currentGem, leftGem, rightGem);
-                        }
-
-                        if (i > 0 && i < gridManager.GridRows - 1)
-                        {
-                            GameObject upperGem = gridManager.GemsGrid[i - 1, j];
-                            GameObject lowerGem = gridManager.GemsGrid[i + 1, j];
-
-                            CompareGems(currentGem, upperGem, lowerGem);
-                        }
-                    }
-                }
-            }
+            return gridManager.GemsGrid[row, column] != null 
+                   && gridManager.GemsGrid[row, column].GetComponent<Gem>().HasMatch;
         }
     }
 }

@@ -225,7 +225,7 @@ namespace Match3.Piece
             {
                 if (FoundMatchAfterMovement())
                 {
-                    ServiceLocator.GetGridManager().FoundMatch();
+                    ServiceLocator.GetGridManager().DestroyFoundMatch();
                 }
                 else
                 {

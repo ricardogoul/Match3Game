@@ -9,6 +9,7 @@ namespace Match3.Grid
     {
         private float WaitForSeconds => gameSettingsScriptableObject.waitForSeconds;
         private float ExplosionEffectTimer => gameSettingsScriptableObject.explosionEffectTimer;
+        private float TimeToShuffle => gameSettingsScriptableObject.timeToShuffle;
         private GameObject ExplosionEffect => gameSettingsScriptableObject.explosionEffect;
 
         private int streakValue = 1;
@@ -40,72 +41,62 @@ namespace Match3.Grid
             ServiceLocator.GetSoundManager().PlayExplodeGemSound();
         }
 
-        public void FoundMatch()
+        public void DestroyFoundMatch()
         {
-            for (int row = 0; row < GridRows; row++)
-            {
-                for (int column = 0; column < GridColumns; column++)
-                {
-                    if (GemsGrid[row, column] != null)
-                    {
-                        DestroyMatches(row , column);
-                    }
-                }
-            }
-
+            LoopThruGrid(DoDestroyFoundMatch);
             StartCoroutine(DropRow());
         }
 
-        
+        private void DoDestroyFoundMatch(int column, int row)
+        {
+            if (GemsGrid[row, column] != null)
+            {
+                DestroyMatches(row , column);
+            }
+        }
 
-        private void SwitchGemsForDeadlockCheck(int row, int column, Vector2 direction)
+        private void SwitchGems(int row, int column, Vector2 direction)
         {
             GameObject holder = GemsGrid[row + (int)direction.y, column + (int)direction.x];
             GemsGrid[row + (int)direction.y, column + (int)direction.x] = GemsGrid[row, column];
             GemsGrid[row, column] = holder;
         }        
 
-        private bool SwitchAndCheckForDeadlock(int row, int column, Vector2 direction)
+        private bool SwitchAndCheckForMatch(int row, int column, Vector2 direction)
         {
-            SwitchGemsForDeadlockCheck(row, column, direction);
-
-            if (ServiceLocator.GetFindMatches().CheckForMatches())
-            {
-                SwitchGemsForDeadlockCheck(row, column, direction);
-                return true;
-            }
-
-            SwitchGemsForDeadlockCheck(row, column, direction);
-            return false;
+            SwitchGems(row, column, direction);
+            var foundMatchOnGrid = ServiceLocator.GetFindMatches().CheckForMatches();
+            SwitchGems(row, column, direction);
+            return foundMatchOnGrid;
         }
 
         private bool IsDeadLocked()
         {
-            for (int row = 0; row < GridRows; row++)
+            var result = LoopThruGrid(CheckIfNotDeadlocked);
+            return !result;
+        }
+        
+        private bool CheckIfNotDeadlocked(int column, int row)
+        {
+            if (GemsGrid[row, column] == null) return false;
+                    
+            if (column < GridColumns - 1)
             {
-                for (int column = 0; column < GridColumns; column++)
+                if(SwitchAndCheckForMatch(row, column, Vector2.right))
                 {
-                    if (GemsGrid[row, column] != null)
-                    {
-                        if (column < GridColumns - 1)
-                        {
-                            if(SwitchAndCheckForDeadlock(row, column, Vector2.right))
-                            {
-                                return false;
-                            }
-                        }
-
-                        if (row < GridRows - 1)
-                        {
-                            if (SwitchAndCheckForDeadlock(row, column, Vector2.up))
-                            {
-                                return false;
-                            }
-                        }
-                    }
+                    return true;
                 }
             }
-            return true;
+        
+            if (row < GridRows - 1)
+            {
+                if (SwitchAndCheckForMatch(row, column, Vector2.up))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         public void ShuffleGems()
@@ -116,26 +107,26 @@ namespace Match3.Grid
                 ServiceLocator.GetSoundManager().PlaySwapGemsSound();
 
             if (IsDeadLocked())
-                Invoke(nameof(ShuffleGems), 0.7f);
+                Invoke(nameof(ShuffleGems), TimeToShuffle);
         }
 
         private IEnumerator DropRow()
         {
             int nullSpots = 0;
 
-            for (int j = 0; j < GridColumns; j++)
+            for (int column = 0; column < GridColumns; column++)
             {
-                for (int i = GridRows - 1; i >= 0; i--)
+                for (int row = GridRows - 1; row >= 0; row--)
                 {
-                    if (GemsGrid[i, j] == null)
+                    if (GemsGrid[row, column] == null)
                     {
                         nullSpots++;
                     }
                     else if (nullSpots > 0)
                     {
-                        GemsGrid[i, j].GetComponent<Gem>().PreviousRow += nullSpots;
-                        GemsGrid[i, j].GetComponent<Gem>().Row += nullSpots;
-                        GemsGrid[i, j] = null;
+                        GemsGrid[row, column].GetComponent<Gem>().PreviousRow += nullSpots;
+                        GemsGrid[row, column].GetComponent<Gem>().Row += nullSpots;
+                        GemsGrid[row, column] = null;
                     }
                 }
                 nullSpots = 0;
@@ -154,13 +145,13 @@ namespace Match3.Grid
             while (ServiceLocator.GetFindMatches().GemsMatchedOnGrid())
             {
                 streakValue ++;
-                FoundMatch();
+                DestroyFoundMatch();
                 yield return new WaitForSeconds(WaitForSeconds * 4);
             }
 
             if (IsDeadLocked())
             {
-                Invoke("ShuffleGems", 0.7f);
+                Invoke(nameof(ShuffleGems), 0.7f);
                 Debug.Log("IS DEADLOCKED!!!");
             }
 
