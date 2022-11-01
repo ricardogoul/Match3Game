@@ -13,11 +13,13 @@ public class ServiceLocator : MonoBehaviour
     private static SoundManager soundManager;
     private static FindMatches findMatches;
     private static GridManager gridManager;
+    private static GemPool gemPool;
 
     public static GameManager GetGameManager() => gameManager;
     public static SoundManager GetSoundManager() => soundManager;
     public static FindMatches GetFindMatches() => findMatches;
     public static GridManager GetGridManager() => gridManager;
+    public static GemPool GetGemPool() => gemPool;
     
     public static void Provide(GameManager service)
     { 
@@ -41,5 +43,11 @@ public class ServiceLocator : MonoBehaviour
     {
         if(gridManager != null) return;
         gridManager = service;
+    }
+
+    public static void Provide(GemPool service)
+    {
+        if(gemPool != null) return;
+        gemPool = service;
     }
 }

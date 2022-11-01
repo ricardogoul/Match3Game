@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using UnityEngine;
 using Match3.Piece;
 using Match3.UI;
@@ -15,10 +16,13 @@ namespace Match3.Grid
         private int streakValue = 1;
         private GameState currentState;
 
-        private void Start()
+        private void OnEnable()
         {
             ServiceLocator.Provide(this);
+        }
 
+        private void Start()
+        {
             BuildGrid();
             currentState = GameState.CantMove;
         }
