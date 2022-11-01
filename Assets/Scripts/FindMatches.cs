@@ -68,32 +68,32 @@ namespace Match3.Grid {
 
         public bool CheckForMatches()
         {
-            for (int i = 0; i < gridManager.GridRows; i++)
-            {
-                for (int j = 0; j < gridManager.GridColumns; j++)
-                {
-                    if (gridManager.GemsGrid[i, j] == null) continue;
-                    
-                    if (i < gridManager.GridRows - 2)
-                    {
-                        if (gridManager.GemsGrid[i + 1, j] != null && gridManager.GemsGrid[i + 2, j] != null)
-                        {
-                            if (gridManager.GemsGrid[i + 1, j].CompareTag(gridManager.GemsGrid[i, j].tag) && gridManager.GemsGrid[i + 2, j].CompareTag(gridManager.GemsGrid[i, j].tag))
-                            {
-                                return true;
-                            }
-                        }
-                    }
+            var result = gridManager.LoopThruGrid(DoCheckForMatches);
+            return result;
+        }
 
-                    if (j < gridManager.GridColumns - 2)
+        private bool DoCheckForMatches(int column, int row)
+        {
+            if (gridManager.GemsGrid[row, column] == null) return false;
+                    
+            if (row < gridManager.GridRows - 2)
+            {
+                if (gridManager.GemsGrid[row + 1, column] != null && gridManager.GemsGrid[row + 2, column] != null)
+                {
+                    if (gridManager.GemsGrid[row + 1, column].CompareTag(gridManager.GemsGrid[row, column].tag) && gridManager.GemsGrid[row + 2, column].CompareTag(gridManager.GemsGrid[row, column].tag))
                     {
-                        if (gridManager.GemsGrid[i, j + 1] != null && gridManager.GemsGrid[i, j + 2] != null)
-                        {
-                            if (gridManager.GemsGrid[i, j + 1].CompareTag(gridManager.GemsGrid[i, j].tag) && gridManager.GemsGrid[i, j + 2].CompareTag(gridManager.GemsGrid[i, j].tag))
-                            {
-                                return true;
-                            }
-                        }
+                        return true;
+                    }
+                }
+            }
+
+            if (column < gridManager.GridColumns - 2)
+            {
+                if (gridManager.GemsGrid[row, column + 1] != null && gridManager.GemsGrid[row, column + 2] != null)
+                {
+                    if (gridManager.GemsGrid[row, column + 1].CompareTag(gridManager.GemsGrid[row, column].tag) && gridManager.GemsGrid[row, column + 2].CompareTag(gridManager.GemsGrid[row, column].tag))
+                    {
+                        return true;
                     }
                 }
             }
