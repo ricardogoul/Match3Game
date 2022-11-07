@@ -4,6 +4,7 @@ using Random = UnityEngine.Random;
 
 public class GemPool : MonoBehaviour
 {
+    public int CurrentPoolSize => gemsPool.Count;
     [SerializeField]
     private Transform poolHolder;
     [SerializeField]

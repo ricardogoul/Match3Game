@@ -33,9 +33,11 @@ namespace Match3.Grid
             if (!gem.HasMatch) return;
             
             DisplayExplosionEffect(row, column);
-            Destroy(GemsGrid[row, column]);
-            Score.HandleIncreaseScoreDelegate?.Invoke(gem.GemBaseValue * streakValue);
+            gem.ResetGem();
+            GemsGrid[row, column].SetActive(false);
+            ServiceLocator.GetGemPool().ReturnGemToPool(GemsGrid[row, column]);
             GemsGrid[row, column] = null;
+            Score.HandleIncreaseScoreDelegate?.Invoke(gem.GemBaseValue * streakValue);
         }
 
         private void DisplayExplosionEffect(int row, int column)

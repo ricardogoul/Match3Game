@@ -14,6 +14,8 @@ namespace Match3.Piece
         
         [SerializeField]
         private GemScriptableObject gemScriptableObject;
+        [SerializeField]
+        private SpriteRenderer spriteRenderer;
         [Tooltip("Amount of seconds to wait before going back to last position when switched.")]
         [SerializeField]
         private float waitSeconds = 0.2f;
@@ -35,10 +37,16 @@ namespace Match3.Piece
             Column = column;
             Row = row;
         }
+        
+        public void ResetGem()
+        {
+            HasMatch = false;
+            spriteRenderer.color = Color.white;
+        }
 
         private void OnValidate()
         {
-            GetComponent<SpriteRenderer>().sprite = gemScriptableObject.gemSprite;
+            spriteRenderer.sprite = gemScriptableObject.gemSprite;
         }
 
         private void FixedUpdate()
@@ -51,9 +59,7 @@ namespace Match3.Piece
         private void ChangeColorWhenHasMatch()
         {
             if (!HasMatch) return;
-            
-            SpriteRenderer gemSprite = GetComponent<SpriteRenderer>();
-            gemSprite.color = Color.grey;
+            spriteRenderer.color = Color.grey;
         }
 
         private void OnMouseDown()

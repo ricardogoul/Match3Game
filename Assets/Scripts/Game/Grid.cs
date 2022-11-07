@@ -58,28 +58,29 @@ namespace Match3.Grid
         internal void BuildGrid()
         {
             GemsGrid = new GameObject[GridRows, GridColumns];
-            LoopThruGrid(MakeGrid, GemPrefabs);
+            LoopThruGrid(MakeGrid);
         }
 
-        private void MakeGrid(int column, int row, List<GameObject> gemObjects)
+        private void MakeGrid(int column, int row)
         {
-            var gem = GenerateNonMatchingGem(column, row, gemObjects);
+            var gem = GetNonMatchingGemFromPool(column, row);
             Vector2 auxPos = new Vector2(column, (row * -1) + GridOffset);
-            InstantiateGem(column, row, auxPos, gem);
+            SetGem(column, row, auxPos, gem);
         }
 
-        private GameObject GenerateNonMatchingGem(int column, int row, List<GameObject> gemList)
+        private GameObject GetNonMatchingGemFromPool(int column, int row)
         {
-            var gemNumber = Random.Range(0, gemList.Count);
+            var gem = ServiceLocator.GetGemPool().GetPooledGem();
 
-            while (CheckForMatches(column, row, gemList[gemNumber]))
+            while (CheckForMatches(column, row, gem))
             {
-                gemNumber = Random.Range(0, gemList.Count);
+                ServiceLocator.GetGemPool().ReturnGemToPool(gem);
+                gem = ServiceLocator.GetGemPool().GetPooledGem();
             }
 
-            return gemList[gemNumber];
+            return gem;
         }
-        
+
         private bool CheckForMatchesOnColumn(int column, int row, GameObject gemToCheck)
         {
             if (GemsGrid[row - 1, column] == null || GemsGrid[row - 2, column] == null) return false;
@@ -96,13 +97,13 @@ namespace Match3.Grid
                    && GemsGrid[row, column - 2].CompareTag(gemToCheck.tag);
         }
 
-        private void InstantiateGem(int column, int row, Vector2 gemPos, GameObject gemPrefab)
+        private void SetGem(int column, int row, Vector2 gemPos, GameObject gemObject)
         {
-            var gemObject = Instantiate(gemPrefab, gemPos, Quaternion.identity, gridTransform);
+            gemObject.transform.position = gemPos;
             var gem = gemObject.GetComponent<Gem>();
             gem.Constructor(column, row);
-
             GemsGrid[row, column] = gemObject;
+            gemObject.SetActive(true);
         }
 
         internal void ShuffleGrid()
@@ -113,8 +114,20 @@ namespace Match3.Grid
 
         private void DoShuffle(int column, int row, List<GameObject> gemList)
         {
-            var gem = GenerateNonMatchingGem(column, row, gemList);
+            var gem = GetNonMatchingGemFromList(column, row, gemList);
             ShuffleGems(column, row, gem, gemList);
+        }
+        
+        private GameObject GetNonMatchingGemFromList(int column, int row, List<GameObject> gems)
+        {
+            var gemNumber = Random.Range(0, gems.Count);
+
+            while (CheckForMatches(column, row, gems[gemNumber]))
+            {
+                gemNumber = Random.Range(0, gems.Count);
+            }
+
+            return gems[gemNumber];
         }
         
         private void ShuffleGems(int column, int row, GameObject gemObject, List<GameObject> gemsToShuffle)
@@ -160,9 +173,8 @@ namespace Match3.Grid
             if (GemsGrid[row, column] != null) return;
                     
             var auxPos = new Vector2(column, (row*-1) + GridOffset);
-            var gemNumber = Random.Range(0, GemPrefabs.Count);
-
-            InstantiateGem(column, row, auxPos, GemPrefabs[gemNumber]);
+            var gem = ServiceLocator.GetGemPool().GetPooledGem();
+            SetGem(column, row, auxPos, gem);
         }
     }
 }
