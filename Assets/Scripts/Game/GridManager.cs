@@ -11,7 +11,6 @@ namespace Match3.Grid
         private float WaitForSeconds => gameSettingsScriptableObject.waitForSeconds;
         private float ExplosionEffectTimer => gameSettingsScriptableObject.explosionEffectTimer;
         private float TimeToShuffle => gameSettingsScriptableObject.timeToShuffle;
-        private GameObject ExplosionEffect => gameSettingsScriptableObject.explosionEffect;
 
         private int streakValue = 1;
         private GameState currentState;
@@ -27,26 +26,6 @@ namespace Match3.Grid
             currentState = GameState.CantMove;
         }
 
-        private void DestroyMatches(int row, int column)
-        {
-            var gem = GemsGrid[row, column].GetComponent<Gem>();
-            if (!gem.HasMatch) return;
-            
-            DisplayExplosionEffect(row, column);
-            gem.ResetGem();
-            GemsGrid[row, column].SetActive(false);
-            ServiceLocator.GetGemPool().ReturnGemToPool(GemsGrid[row, column]);
-            GemsGrid[row, column] = null;
-            Score.HandleIncreaseScoreDelegate?.Invoke(gem.GemBaseValue * streakValue);
-        }
-
-        private void DisplayExplosionEffect(int row, int column)
-        {
-            GameObject explosionEffect = Instantiate(ExplosionEffect, GemsGrid[row, column].transform.position + new Vector3(0,0,-1), Quaternion.identity);
-            Destroy(explosionEffect, ExplosionEffectTimer);
-            ServiceLocator.GetSoundManager().PlayExplodeGemSound();
-        }
-
         public void DestroyFoundMatch()
         {
             LoopThruGrid(DoDestroyFoundMatch);
@@ -59,6 +38,35 @@ namespace Match3.Grid
             {
                 DestroyMatches(row , column);
             }
+        }
+        
+        private void DestroyMatches(int row, int column)
+        {
+            var gem = GemsGrid[row, column].GetComponent<Gem>();
+            if (!gem.HasMatch) return;
+            
+            DisplayExplosionEffect(row, column);
+            gem.ResetGem();
+            GemsGrid[row, column].SetActive(false);
+            ServiceLocator.GetGemPool().ReturnGemToPool(GemsGrid[row, column]);
+            GemsGrid[row, column] = null;
+            Score.HandleIncreaseScoreDelegate?.Invoke(gem.GemBaseValue * streakValue);
+        }
+        
+        private void DisplayExplosionEffect(int row, int column)
+        {
+            StartCoroutine(DisplayEffectCo(row, column));
+            ServiceLocator.GetSoundManager().PlayExplodeGemSound();
+        }
+
+        private IEnumerator DisplayEffectCo(int row, int column)
+        {
+            var explosionEffect = ServiceLocator.GetGemExplosionPool().GetExplosion();
+            explosionEffect.particleObject.transform.position = new Vector3(column, row * -1, 0);
+            explosionEffect.particleObject.SetActive(true);
+            explosionEffect.particle.Play();
+            yield return new WaitForSeconds(ExplosionEffectTimer);
+            explosionEffect.particleObject.SetActive(false);
         }
 
         private void SwitchGems(int row, int column, Vector2 direction)

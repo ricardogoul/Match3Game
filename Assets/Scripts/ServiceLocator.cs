@@ -1,4 +1,5 @@
 using Match3.Grid;
+using Match3.Piece;
 using Match3.Sounds;
 using UnityEngine;
 
@@ -14,12 +15,14 @@ public class ServiceLocator : MonoBehaviour
     private static FindMatches findMatches;
     private static GridManager gridManager;
     private static GemPool gemPool;
+    private static GemExplosionPool gemExplosionPool;
 
     public static GameManager GetGameManager() => gameManager;
     public static SoundManager GetSoundManager() => soundManager;
     public static FindMatches GetFindMatches() => findMatches;
     public static GridManager GetGridManager() => gridManager;
     public static GemPool GetGemPool() => gemPool;
+    public static GemExplosionPool GetGemExplosionPool() => gemExplosionPool;
     
     public static void Provide(GameManager service)
     { 
@@ -49,5 +52,11 @@ public class ServiceLocator : MonoBehaviour
     {
         if(gemPool != null) return;
         gemPool = service;
+    }
+
+    public static void Provide(GemExplosionPool service)
+    {
+        if(gemExplosionPool != null) return;
+        gemExplosionPool = service;
     }
 }

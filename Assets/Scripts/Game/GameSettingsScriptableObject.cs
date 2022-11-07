@@ -10,7 +10,6 @@ public class GameSettingsScriptableObject : ScriptableObject
     public int gridOffset;
     [Space]
     public List<GameObject> gemPrefabs;
-    public GameObject explosionEffect;
 
     [Space]
     public float waitForSeconds;

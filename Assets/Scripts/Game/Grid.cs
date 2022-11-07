@@ -11,7 +11,7 @@ namespace Match3.Grid
     {
         public int GridRows => gameSettingsScriptableObject.gridRows;
         public int GridColumns => gameSettingsScriptableObject.gridColumns;
-        private int GridOffset => gameSettingsScriptableObject.gridOffset;
+        internal int GridOffset => gameSettingsScriptableObject.gridOffset;
         private List<GameObject> GemPrefabs => gameSettingsScriptableObject.gemPrefabs;
 
         public GameObject[,] GemsGrid { get; private set; }
