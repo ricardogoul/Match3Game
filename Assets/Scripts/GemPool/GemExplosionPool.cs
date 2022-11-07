@@ -11,7 +11,7 @@ public class GemExplosionPool : MonoBehaviour
     [SerializeField] 
     private GameObject explosionPrefab;
 
-    private const int PoolSize = 12;
+    private const int PoolSize = 10;
     private List<Particle> explosionPool;
 
     private void Awake()
