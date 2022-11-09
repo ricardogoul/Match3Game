@@ -53,6 +53,7 @@ namespace Match3.Grid
             CurrentLevel = 1;
             SetGameUp();
             score.SetFirstLevel();
+            ServiceLocator.GetGridManager().IsDeadLocked();
         }
         
         public void SetGameUp()

@@ -84,6 +84,10 @@ namespace Match3.Grid {
                     if (gridManager.GemsGrid[row + 1, column].MyGemType == gridManager.GemsGrid[row, column].MyGemType 
                         && gridManager.GemsGrid[row + 2, column].MyGemType == gridManager.GemsGrid[row, column].MyGemType)
                     {
+                        gridManager.GemsGrid[row, column].HasPossibleMatch();
+                        gridManager.GemsGrid[row + 1, column].HasPossibleMatch();
+                        gridManager.GemsGrid[row + 2, column].HasPossibleMatch();
+                        
                         return true;
                     }
                 }
@@ -96,6 +100,10 @@ namespace Match3.Grid {
                     if (gridManager.GemsGrid[row, column + 1].MyGemType == gridManager.GemsGrid[row, column].MyGemType
                         && gridManager.GemsGrid[row, column + 2].MyGemType == gridManager.GemsGrid[row, column].MyGemType)
                     {
+                        gridManager.GemsGrid[row, column].HasPossibleMatch();
+                        gridManager.GemsGrid[row, column + 1].HasPossibleMatch();
+                        gridManager.GemsGrid[row, column + 2].HasPossibleMatch();
+                        
                         return true;
                     }
                 }

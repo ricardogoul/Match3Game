@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using UnityEngine;
 using Match3.Grid;
 
@@ -34,14 +35,24 @@ namespace Match3.Piece
         [SerializeField]
         private float waitSecondsToMove = 0.2f;
 
+        [SerializeField] private float waitToStartMatchAnim = 5f;
+
         private const float TimeToLerp = 0.2f;
         
         private Vector2 mouseClicked;
         private Vector2 mouseReleased;
 
         private int previousCol;
+        private bool hasPossibleMatch;
 
         private Gem swappedGem;
+        private Animator animator;
+        private static readonly int FoundMatch = Animator.StringToHash("FoundMatch");
+
+        private void Awake()
+        {
+            animator = GetComponent<Animator>();
+        }
 
         public void Constructor(int column, int row)
         {
@@ -274,6 +285,22 @@ namespace Match3.Piece
                 swappedGem.Column = Column;
                 Column = previousCol;
             }
+        }
+
+        public void HasPossibleMatch()
+        {
+            Invoke(nameof(PlayMatchAnim), waitToStartMatchAnim);
+        }
+
+        private void PlayMatchAnim()
+        {
+            animator.SetBool(FoundMatch, true);
+        }
+
+        public void StopMatchAnim()
+        {
+            CancelInvoke(nameof(PlayMatchAnim));
+            animator.SetBool(FoundMatch, false);
         }
     }
 }

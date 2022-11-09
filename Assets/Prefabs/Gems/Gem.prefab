@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 7344209639632055033}
   - component: {fileID: -4655914616538326464}
   - component: {fileID: -906692770931923139}
+  - component: {fileID: 4237108206105773977}
   m_Layer: 0
   m_Name: Gem
   m_TagString: Untagged
@@ -126,5 +127,26 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gemScriptableObject: {fileID: 11400000, guid: e20deb8103c28c343a601b06f138865a,
     type: 2}
+  spriteRenderer: {fileID: 7344209639632055033}
   waitSeconds: 0.2
   waitSecondsToMove: 0.2
+--- !u!95 &4237108206105773977
+Animator:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 101674081906177456}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: aed405f2106623d429482c01815a9acf, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0

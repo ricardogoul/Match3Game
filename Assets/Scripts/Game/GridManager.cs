@@ -45,12 +45,22 @@ namespace Match3.Grid
             var gem = GemsGrid[row, column];
             if (!gem.HasMatch) return;
             
+            CancelAllMatchAnim();
             DisplayExplosionEffect(row, column);
             gem.ResetGem();
             GemsGrid[row, column].gameObject.SetActive(false);
             ServiceLocator.GetGemPool().ReturnGemToPool(GemsGrid[row, column]);
             GemsGrid[row, column] = null;
             Score.HandleIncreaseScoreDelegate?.Invoke(gem.GemBaseValue * streakValue);
+        }
+
+        private void CancelAllMatchAnim()
+        {
+            foreach (var gem in GemsGrid)
+            {
+                if(gem == null) continue;
+                gem.StopMatchAnim();
+            }
         }
         
         private void DisplayExplosionEffect(int row, int column)
@@ -80,7 +90,7 @@ namespace Match3.Grid
                 Invoke(nameof(ShuffleGems), TimeToShuffle);
         }
         
-        private bool IsDeadLocked()
+        public bool IsDeadLocked()
         {
             var result = LoopThruGrid(CheckIfNotDeadlocked);
             return !result;
