@@ -62,11 +62,11 @@ namespace Match3.Grid
         private IEnumerator DisplayEffectCo(int row, int column)
         {
             var explosionEffect = ServiceLocator.GetGemExplosionPool().GetExplosion();
-            explosionEffect.particleObject.transform.position = new Vector3(column, row * -1, 0);
-            explosionEffect.particleObject.SetActive(true);
-            explosionEffect.particle.Play();
+            explosionEffect.gameObject.transform.position = new Vector3(column, row * -1, 0);
+            explosionEffect.gameObject.SetActive(true);
+            explosionEffect.Play();
             yield return new WaitForSeconds(ExplosionEffectTimer);
-            explosionEffect.particleObject.SetActive(false);
+            explosionEffect.gameObject.SetActive(false);
         }
 
         private void SwitchGems(int row, int column, Vector2 direction)
