@@ -69,7 +69,7 @@ namespace Match3.Grid
         {
             var gem = ServiceLocator.GetGemPool().GetPooledGem();
 
-            while (CheckForMatches(column, row, gem.gameObject))
+            while (CheckForMatches(column, row, gem))
             {
                 ServiceLocator.GetGemPool().ReturnGemToPool(gem);
                 gem = ServiceLocator.GetGemPool().GetPooledGem();
@@ -78,7 +78,7 @@ namespace Match3.Grid
             return gem;
         }
         
-        private bool CheckForMatches(int column, int row, GameObject gemToCheck)
+        private bool CheckForMatches(int column, int row, Gem gemToCheck)
         {
             if (gemToCheck == null) return false;
             if (row <= 1 && column <= 1) return false;
@@ -87,20 +87,20 @@ namespace Match3.Grid
                    || (column > 1 && CheckForMatchesOnRow(column, row, gemToCheck));
         }
 
-        private bool CheckForMatchesOnColumn(int column, int row, GameObject gemToCheck)
+        private bool CheckForMatchesOnColumn(int column, int row, Gem gemToCheck)
         {
             if (GemsGrid[row - 1, column] == null || GemsGrid[row - 2, column] == null) return false;
-            
-            return GemsGrid[row - 1, column].CompareTag(gemToCheck.tag) 
-                   && GemsGrid[row - 2, column].CompareTag(gemToCheck.tag);
+
+            return GemsGrid[row - 1, column].MyGemType == gemToCheck.MyGemType
+                   && GemsGrid[row - 2, column].MyGemType == gemToCheck.MyGemType;
         }
 
-        private bool CheckForMatchesOnRow(int column, int row, GameObject gemToCheck)
+        private bool CheckForMatchesOnRow(int column, int row, Gem gemToCheck)
         {
             if (GemsGrid[row, column - 1] == null || GemsGrid[row, column - 2] == null) return false;
-            
-            return GemsGrid[row, column - 1].CompareTag(gemToCheck.tag) 
-                   && GemsGrid[row, column - 2].CompareTag(gemToCheck.tag);
+
+            return GemsGrid[row, column - 1].MyGemType == gemToCheck.MyGemType
+                   && GemsGrid[row, column - 2].MyGemType == gemToCheck.MyGemType;
         }
 
         private void SetGem(int column, int row, Vector2 gemPos, Gem gem)
@@ -142,7 +142,7 @@ namespace Match3.Grid
         {
             var gemNumber = Random.Range(0, gems.Count);
 
-            while (CheckForMatches(column, row, gems[gemNumber].gameObject))
+            while (CheckForMatches(column, row, gems[gemNumber]))
             {
                 gemNumber = Random.Range(0, gems.Count);
             }

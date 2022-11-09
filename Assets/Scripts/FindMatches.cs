@@ -59,8 +59,8 @@ namespace Match3.Grid {
         private void CompareGems(Gem currentGem, Gem gem1, Gem gem2)
         {
             if (gem1 == null || gem2 == null) return;
-            if (!gem1.gameObject.CompareTag(currentGem.tag) 
-                || !gem2.gameObject.CompareTag(currentGem.tag)) return;
+            if (gem1.MyGemType != currentGem.MyGemType 
+               || gem2.MyGemType != currentGem.MyGemType) return;
             
             gem1.HasMatch = true;
             gem2.HasMatch = true;
@@ -81,8 +81,8 @@ namespace Match3.Grid {
             {
                 if (gridManager.GemsGrid[row + 1, column] != null && gridManager.GemsGrid[row + 2, column] != null)
                 {
-                    if (gridManager.GemsGrid[row + 1, column].CompareTag(gridManager.GemsGrid[row, column].tag) 
-                        && gridManager.GemsGrid[row + 2, column].CompareTag(gridManager.GemsGrid[row, column].tag))
+                    if (gridManager.GemsGrid[row + 1, column].MyGemType == gridManager.GemsGrid[row, column].MyGemType 
+                        && gridManager.GemsGrid[row + 2, column].MyGemType == gridManager.GemsGrid[row, column].MyGemType)
                     {
                         return true;
                     }
@@ -93,8 +93,8 @@ namespace Match3.Grid {
             {
                 if (gridManager.GemsGrid[row, column + 1] != null && gridManager.GemsGrid[row, column + 2] != null)
                 {
-                    if (gridManager.GemsGrid[row, column + 1].CompareTag(gridManager.GemsGrid[row, column].tag) 
-                        && gridManager.GemsGrid[row, column + 2].CompareTag(gridManager.GemsGrid[row, column].tag))
+                    if (gridManager.GemsGrid[row, column + 1].MyGemType == gridManager.GemsGrid[row, column].MyGemType
+                        && gridManager.GemsGrid[row, column + 2].MyGemType == gridManager.GemsGrid[row, column].MyGemType)
                     {
                         return true;
                     }

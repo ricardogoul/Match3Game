@@ -69,20 +69,17 @@ namespace Match3.Grid
             explosionEffect.gameObject.SetActive(false);
         }
 
-        private void SwitchGems(int row, int column, Vector2 direction)
+        public void ShuffleGems()
         {
-            (GemsGrid[row + (int)direction.y, column + (int)direction.x], GemsGrid[row, column]) = 
-                (GemsGrid[row, column], GemsGrid[row + (int)direction.y, column + (int)direction.x]);
-        }        
+            ShuffleGrid();
 
-        private bool SwitchAndCheckForMatch(int row, int column, Vector2 direction)
-        {
-            SwitchGems(row, column, direction);
-            var foundMatchOnGrid = ServiceLocator.GetFindMatches().CheckForMatches();
-            SwitchGems(row, column, direction);
-            return foundMatchOnGrid;
+            if (currentState == GameState.Move)
+                ServiceLocator.GetSoundManager().PlaySwapGemsSound();
+
+            if (IsDeadLocked())
+                Invoke(nameof(ShuffleGems), TimeToShuffle);
         }
-
+        
         private bool IsDeadLocked()
         {
             var result = LoopThruGrid(CheckIfNotDeadlocked);
@@ -111,16 +108,19 @@ namespace Match3.Grid
 
             return false;
         }
-
-        public void ShuffleGems()
+        
+        private bool SwitchAndCheckForMatch(int row, int column, Vector2 direction)
         {
-            ShuffleGrid();
-
-            if (currentState == GameState.Move)
-                ServiceLocator.GetSoundManager().PlaySwapGemsSound();
-
-            if (IsDeadLocked())
-                Invoke(nameof(ShuffleGems), TimeToShuffle);
+            SwitchGems(row, column, direction);
+            var foundMatchOnGrid = ServiceLocator.GetFindMatches().CheckForMatches();
+            SwitchGems(row, column, direction);
+            return foundMatchOnGrid;
+        }
+        
+        private void SwitchGems(int row, int column, Vector2 direction)
+        {
+            (GemsGrid[row + (int)direction.y, column + (int)direction.x], GemsGrid[row, column]) = 
+                (GemsGrid[row, column], GemsGrid[row + (int)direction.y, column + (int)direction.x]);
         }
 
         private IEnumerator DropRow()
@@ -164,7 +164,7 @@ namespace Match3.Grid
 
             if (IsDeadLocked())
             {
-                Invoke(nameof(ShuffleGems), 0.7f);
+                Invoke(nameof(ShuffleGems), TimeToShuffle);
                 Debug.Log("IS DEADLOCKED!!!");
             }
 

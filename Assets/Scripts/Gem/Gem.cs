@@ -6,11 +6,22 @@ namespace Match3.Piece
 {
     public class Gem : MonoBehaviour
     {
+        public enum GemType
+        {
+            APPLE,
+            BREAD,
+            BUSH,
+            COCONUT,
+            JELLY,
+            MILK,
+            ORANGE
+        }
         public bool HasMatch { get; set; }
         public int Row { get; set; }
         public int Column { get; set; }
         public int PreviousRow { get; set; }
         public int GemBaseValue => gemScriptableObject.gemBaseValue;
+        public GemType MyGemType => gemScriptableObject.gemType;
         
         [SerializeField]
         private GemScriptableObject gemScriptableObject;
