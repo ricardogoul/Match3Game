@@ -145,28 +145,28 @@ namespace Match3.Piece
         
         private void MoveRight()
         {
-            swappedGem = ServiceLocator.GetGridManager().GemsGrid[Row, Column + 1].GetComponent<Gem>();
+            swappedGem = ServiceLocator.GetGridManager().GemsGrid[Row, Column + 1];
             swappedGem.Column -= 1;
             Column += 1;
         }
 
         private void MoveLeft()
         {
-            swappedGem = ServiceLocator.GetGridManager().GemsGrid[Row, Column - 1].GetComponent<Gem>();
+            swappedGem = ServiceLocator.GetGridManager().GemsGrid[Row, Column - 1];
             swappedGem.Column += 1;
             Column -= 1;
         }
 
         private void MoveUp()
         {
-            swappedGem = ServiceLocator.GetGridManager().GemsGrid[Row - 1, Column].GetComponent<Gem>();
+            swappedGem = ServiceLocator.GetGridManager().GemsGrid[Row - 1, Column];
             swappedGem.Row += 1;
             Row -= 1;
         }
 
         private void MoveDown()
         {
-            swappedGem = ServiceLocator.GetGridManager().GemsGrid[Row + 1, Column].GetComponent<Gem>();
+            swappedGem = ServiceLocator.GetGridManager().GemsGrid[Row + 1, Column];
             swappedGem.Row -= 1;
             Row += 1;
         }
@@ -182,11 +182,7 @@ namespace Match3.Piece
                 currentPosition = Vector2.Lerp(currentPosition, auxPosition, TimeToLerp);
                 transform.position = currentPosition;
 
-                if (ServiceLocator.GetGridManager().GemsGrid[Row, Column] != gameObject)
-                {
-                    ServiceLocator.GetGridManager().GemsGrid[Row, Column] = gameObject;
-                }
-
+                ServiceLocator.GetGridManager().GemsGrid[Row, Column] = this;
                 ServiceLocator.GetFindMatches().FindMatchesOnGrid();
             }
             else
@@ -208,11 +204,7 @@ namespace Match3.Piece
                 currentPosition = Vector2.Lerp(currentPosition, auxPosition, TimeToLerp);
                 transform.position = currentPosition;
 
-                if (ServiceLocator.GetGridManager().GemsGrid[Row, Column] != gameObject)
-                {
-                    ServiceLocator.GetGridManager().GemsGrid[Row, Column] = gameObject;
-                }
-
+                ServiceLocator.GetGridManager().GemsGrid[Row, Column] = this;
                 ServiceLocator.GetFindMatches().FindMatchesOnGrid();
             }
             else

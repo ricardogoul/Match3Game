@@ -42,12 +42,12 @@ namespace Match3.Grid
         
         private void DestroyMatches(int row, int column)
         {
-            var gem = GemsGrid[row, column].GetComponent<Gem>();
+            var gem = GemsGrid[row, column];
             if (!gem.HasMatch) return;
             
             DisplayExplosionEffect(row, column);
             gem.ResetGem();
-            GemsGrid[row, column].SetActive(false);
+            GemsGrid[row, column].gameObject.SetActive(false);
             ServiceLocator.GetGemPool().ReturnGemToPool(GemsGrid[row, column]);
             GemsGrid[row, column] = null;
             Score.HandleIncreaseScoreDelegate?.Invoke(gem.GemBaseValue * streakValue);
@@ -71,9 +71,8 @@ namespace Match3.Grid
 
         private void SwitchGems(int row, int column, Vector2 direction)
         {
-            GameObject holder = GemsGrid[row + (int)direction.y, column + (int)direction.x];
-            GemsGrid[row + (int)direction.y, column + (int)direction.x] = GemsGrid[row, column];
-            GemsGrid[row, column] = holder;
+            (GemsGrid[row + (int)direction.y, column + (int)direction.x], GemsGrid[row, column]) = 
+                (GemsGrid[row, column], GemsGrid[row + (int)direction.y, column + (int)direction.x]);
         }        
 
         private bool SwitchAndCheckForMatch(int row, int column, Vector2 direction)
@@ -138,8 +137,8 @@ namespace Match3.Grid
                     }
                     else if (nullSpots > 0)
                     {
-                        GemsGrid[row, column].GetComponent<Gem>().PreviousRow += nullSpots;
-                        GemsGrid[row, column].GetComponent<Gem>().Row += nullSpots;
+                        GemsGrid[row, column].PreviousRow += nullSpots;
+                        GemsGrid[row, column].Row += nullSpots;
                         GemsGrid[row, column] = null;
                     }
                 }

@@ -12,11 +12,8 @@ namespace Match3.Grid
         public int GridRows => gameSettingsScriptableObject.gridRows;
         public int GridColumns => gameSettingsScriptableObject.gridColumns;
         private int GridOffset => gameSettingsScriptableObject.gridOffset;
-        private List<GameObject> GemPrefabs => gameSettingsScriptableObject.gemPrefabs;
 
-        public GameObject[,] GemsGrid { get; private set; }
-        [SerializeField]
-        private Transform gridTransform;
+        public Gem[,] GemsGrid { get; private set; }
         [SerializeField]
         internal GameSettingsScriptableObject gameSettingsScriptableObject;
 
@@ -31,7 +28,7 @@ namespace Match3.Grid
             }
         }
         
-        private void LoopThruGrid(Action<int, int, List<GameObject>> callback, List<GameObject> gameObjectList)
+        private void LoopThruGrid(Action<int, int, List<Gem>> callback, List<Gem> gameObjectList)
         {
             for (var row = 0; row < GridRows; row++)
             {
@@ -57,7 +54,7 @@ namespace Match3.Grid
 
         internal void BuildGrid()
         {
-            GemsGrid = new GameObject[GridRows, GridColumns];
+            GemsGrid = new Gem[GridRows, GridColumns];
             LoopThruGrid(MakeGrid);
         }
 
@@ -68,17 +65,26 @@ namespace Match3.Grid
             SetGem(column, row, auxPos, gem);
         }
 
-        private GameObject GetNonMatchingGemFromPool(int column, int row)
+        private Gem GetNonMatchingGemFromPool(int column, int row)
         {
             var gem = ServiceLocator.GetGemPool().GetPooledGem();
 
-            while (CheckForMatches(column, row, gem))
+            while (CheckForMatches(column, row, gem.gameObject))
             {
                 ServiceLocator.GetGemPool().ReturnGemToPool(gem);
                 gem = ServiceLocator.GetGemPool().GetPooledGem();
             }
 
             return gem;
+        }
+        
+        private bool CheckForMatches(int column, int row, GameObject gemToCheck)
+        {
+            if (gemToCheck == null) return false;
+            if (row <= 1 && column <= 1) return false;
+            
+            return (row > 1 && CheckForMatchesOnColumn(column, row, gemToCheck))
+                   || (column > 1 && CheckForMatchesOnRow(column, row, gemToCheck));
         }
 
         private bool CheckForMatchesOnColumn(int column, int row, GameObject gemToCheck)
@@ -97,32 +103,46 @@ namespace Match3.Grid
                    && GemsGrid[row, column - 2].CompareTag(gemToCheck.tag);
         }
 
-        private void SetGem(int column, int row, Vector2 gemPos, GameObject gemObject)
+        private void SetGem(int column, int row, Vector2 gemPos, Gem gem)
         {
-            gemObject.transform.position = gemPos;
-            var gem = gemObject.GetComponent<Gem>();
+            gem.gameObject.transform.position = gemPos;
             gem.Constructor(column, row);
-            GemsGrid[row, column] = gemObject;
-            gemObject.SetActive(true);
+            GemsGrid[row, column] = gem;
+            gem.gameObject.SetActive(true);
         }
 
         internal void ShuffleGrid()
         {
-            var gemsToShuffle = GetGemObjectsList();
+            var gemsToShuffle = GetGemsList();
             LoopThruGrid(DoShuffle, gemsToShuffle);
         }
-
-        private void DoShuffle(int column, int row, List<GameObject> gemList)
+        
+        private List<Gem> GetGemsList()
         {
-            var gem = GetNonMatchingGemFromList(column, row, gemList);
-            ShuffleGems(column, row, gem, gemList);
+            var gems = new List<Gem>();
+            LoopThruGrid(MakeGemsList, gems);
+            return gems;
         }
         
-        private GameObject GetNonMatchingGemFromList(int column, int row, List<GameObject> gems)
+        private void MakeGemsList(int column, int row, List<Gem> gemsList)
+        {
+            if (GemsGrid[row, column] != null)
+            {
+                gemsList.Add(GemsGrid[row, column]);
+            }
+        }
+
+        private void DoShuffle(int column, int row, List<Gem> gemsList)
+        {
+            var gem = GetNonMatchingGemFromList(column, row, gemsList);
+            ShuffleGems(column, row, gem, gemsList);
+        }
+        
+        private Gem GetNonMatchingGemFromList(int column, int row, List<Gem> gems)
         {
             var gemNumber = Random.Range(0, gems.Count);
 
-            while (CheckForMatches(column, row, gems[gemNumber]))
+            while (CheckForMatches(column, row, gems[gemNumber].gameObject))
             {
                 gemNumber = Random.Range(0, gems.Count);
             }
@@ -130,37 +150,12 @@ namespace Match3.Grid
             return gems[gemNumber];
         }
         
-        private void ShuffleGems(int column, int row, GameObject gemObject, List<GameObject> gemsToShuffle)
+        private void ShuffleGems(int column, int row, Gem gem, List<Gem> gemsToShuffle)
         {
-            var gem = gemObject.GetComponent<Gem>();
             gem.Column = column;
             gem.Row = row;
-            GemsGrid[row, column] = gemObject;
-            gemsToShuffle.Remove(gemObject);
-        }
-        
-        private bool CheckForMatches(int column, int row, GameObject gemToCheck)
-        {
-            if (gemToCheck == null) return false;
-            if (row <= 1 && column <= 1) return false;
-            
-            return (row > 1 && CheckForMatchesOnColumn(column, row, gemToCheck))
-                   || (column > 1 && CheckForMatchesOnRow(column, row, gemToCheck));
-        }
-
-        private List<GameObject> GetGemObjectsList()
-        {
-            var gemObjects = new List<GameObject>();
-            LoopThruGrid(MakeGemList, gemObjects);
-            return gemObjects;
-        }
-
-        private void MakeGemList(int column, int row, List<GameObject> gemList)
-        {
-            if (GemsGrid[row, column] != null)
-            {
-                gemList.Add(GemsGrid[row, column]);
-            }
+            GemsGrid[row, column] = gem;
+            gemsToShuffle.Remove(gem);
         }
 
         internal void SpawnGems()

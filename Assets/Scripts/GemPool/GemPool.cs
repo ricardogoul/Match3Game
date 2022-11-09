@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Match3.Piece;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -11,11 +12,11 @@ public class GemPool : MonoBehaviour
 
     private int row;
     private int column;
-    private List<GameObject> gemsPool;
+    private List<Gem> gemsPool;
 
     private void Awake()
     {
-        gemsPool = new List<GameObject>();
+        gemsPool = new List<Gem>();
     }
 
     private void OnEnable()
@@ -31,7 +32,7 @@ public class GemPool : MonoBehaviour
         CreateGemPool();
     }
 
-    public GameObject GetPooledGem()
+    public Gem GetPooledGem()
     {
         if (gemsPool.Count == 0)
             CreateSingleGemAndAddToPool();
@@ -41,8 +42,14 @@ public class GemPool : MonoBehaviour
         gemsPool.Remove(selectedGem);
         return selectedGem;
     }
+    
+    private void CreateSingleGemAndAddToPool()
+    {
+        var randomNumber = Random.Range(0, gemPoolScriptableObject.gemPrefabs.Count);
+        InstantiateGem(gemPoolScriptableObject.gemPrefabs[randomNumber]);
+    }
 
-    public void ReturnGemToPool(GameObject gemToReturn)
+    public void ReturnGemToPool(Gem gemToReturn)
     {
         gemsPool.Add(gemToReturn);
     }
@@ -59,16 +66,11 @@ public class GemPool : MonoBehaviour
         }
     }
 
-    private void InstantiateGem(GameObject gem)
+    private void InstantiateGem(GameObject gemPrefab)
     {
-        var gemObject = Instantiate(gem, poolHolder.position, Quaternion.identity, poolHolder);
+        var gemObject = Instantiate(gemPrefab, poolHolder.position, Quaternion.identity, poolHolder);
         gemObject.SetActive(false);
-        gemsPool.Add(gemObject);
-    }
-
-    private void CreateSingleGemAndAddToPool()
-    {
-        var randomNumber = Random.Range(0, gemPoolScriptableObject.gemPrefabs.Count);
-        InstantiateGem(gemPoolScriptableObject.gemPrefabs[randomNumber]);
+        var gem = gemObject.GetComponent<Gem>();
+        gemsPool.Add(gem);
     }
 }

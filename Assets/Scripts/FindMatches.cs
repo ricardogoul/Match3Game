@@ -56,14 +56,15 @@ namespace Match3.Grid {
             }
         }
 
-        private void CompareGems(GameObject currentGem, GameObject gem1, GameObject gem2)
+        private void CompareGems(Gem currentGem, Gem gem1, Gem gem2)
         {
             if (gem1 == null || gem2 == null) return;
-            if (!gem1.CompareTag(currentGem.tag) || !gem2.CompareTag(currentGem.tag)) return;
+            if (!gem1.gameObject.CompareTag(currentGem.tag) 
+                || !gem2.gameObject.CompareTag(currentGem.tag)) return;
             
-            gem1.GetComponent<Gem>().HasMatch = true;
-            gem2.GetComponent<Gem>().HasMatch = true;
-            currentGem.GetComponent<Gem>().HasMatch = true;
+            gem1.HasMatch = true;
+            gem2.HasMatch = true;
+            currentGem.HasMatch = true;
         }
 
         public bool CheckForMatches()
@@ -80,7 +81,8 @@ namespace Match3.Grid {
             {
                 if (gridManager.GemsGrid[row + 1, column] != null && gridManager.GemsGrid[row + 2, column] != null)
                 {
-                    if (gridManager.GemsGrid[row + 1, column].CompareTag(gridManager.GemsGrid[row, column].tag) && gridManager.GemsGrid[row + 2, column].CompareTag(gridManager.GemsGrid[row, column].tag))
+                    if (gridManager.GemsGrid[row + 1, column].CompareTag(gridManager.GemsGrid[row, column].tag) 
+                        && gridManager.GemsGrid[row + 2, column].CompareTag(gridManager.GemsGrid[row, column].tag))
                     {
                         return true;
                     }
@@ -91,7 +93,8 @@ namespace Match3.Grid {
             {
                 if (gridManager.GemsGrid[row, column + 1] != null && gridManager.GemsGrid[row, column + 2] != null)
                 {
-                    if (gridManager.GemsGrid[row, column + 1].CompareTag(gridManager.GemsGrid[row, column].tag) && gridManager.GemsGrid[row, column + 2].CompareTag(gridManager.GemsGrid[row, column].tag))
+                    if (gridManager.GemsGrid[row, column + 1].CompareTag(gridManager.GemsGrid[row, column].tag) 
+                        && gridManager.GemsGrid[row, column + 2].CompareTag(gridManager.GemsGrid[row, column].tag))
                     {
                         return true;
                     }
@@ -109,7 +112,7 @@ namespace Match3.Grid {
         private bool HasMatchesOnGrid(int column, int row)
         {
             return gridManager.GemsGrid[row, column] != null 
-                   && gridManager.GemsGrid[row, column].GetComponent<Gem>().HasMatch;
+                   && gridManager.GemsGrid[row, column].HasMatch;
         }
     }
 }
