@@ -62,7 +62,6 @@ namespace Match3.Grid
             playingGame = true;
             checkRoundFinished = false;
             gridManager.CurrentState = GridManager.GameState.Move;
-            //ServiceLocator.GetSoundManager().PlayBackgroundMusic();
             timer.TimerSetup();
         }
 

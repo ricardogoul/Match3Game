@@ -82,6 +82,7 @@ namespace Match3.Grid
         public void ShuffleGems()
         {
             ShuffleGrid();
+            CancelAllMatchAnim();
 
             if (currentState == GameState.Move)
                 ServiceLocator.GetSoundManager().PlaySwapGemsSound();
