@@ -62,8 +62,14 @@ namespace Match3.Grid
             playingGame = true;
             checkRoundFinished = false;
             gridManager.CurrentState = GridManager.GameState.Move;
-            ServiceLocator.GetSoundManager().PlayBackgroundMusic();
+            //ServiceLocator.GetSoundManager().PlayBackgroundMusic();
             timer.TimerSetup();
+        }
+
+        public void BackToMenu()
+        {
+            UnfreezeGame();
+            ServiceLocator.GetSoundManager().PlayBackgroundMusic();
         }
 
         private void UnfreezeGame()
@@ -74,6 +80,7 @@ namespace Match3.Grid
         public void StartNextLevel()
         {
             SetGameUp();
+            ServiceLocator.GetSoundManager().PlayBackgroundMusic();
             gridManager.ShuffleGems();
             CurrentLevel++;
             score.SetNextLevel();

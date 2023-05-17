@@ -21,6 +21,8 @@ namespace Match3.UI
         private TextMeshProUGUI nextLevelMessage;
         [SerializeField]
         private TextMeshProUGUI failedAtLevelText;
+        [SerializeField]
+        private float timeToTransitionFromGameToMenu = .5f;
 
         private static readonly int PlayGame = Animator.StringToHash("PlayGame");
 
@@ -45,7 +47,7 @@ namespace Match3.UI
         {
             levelClearedAnim.SetTrigger("NextLevel");
             ServiceLocator.GetGameManager().StartNextLevel();
-            Invoke("UpdateTexts", 1);
+            Invoke(nameof(UpdateTexts), 1);
         }
 
         private void UpdateTexts()
@@ -57,16 +59,16 @@ namespace Match3.UI
         public void MenuButton()
         {
             levelClearedAnim.SetTrigger("NextLevel");            
-            Invoke("CallMenu", 1f);
-            ServiceLocator.GetGameManager().SetGameUp();
+            Invoke(nameof(CallMenu), timeToTransitionFromGameToMenu);
+            ServiceLocator.GetGameManager().BackToMenu();
 
         }
 
         public void FailMenuButton()
         {
             failedLevelAnim.SetTrigger("CallMenu");
-            Invoke("CallMenu", 1f);
-            ServiceLocator.GetGameManager().SetGameUp();
+            Invoke("CallMenu", timeToTransitionFromGameToMenu);
+            ServiceLocator.GetGameManager().BackToMenu();
         }
 
         public void FailedRound()

@@ -2395,6 +2395,7 @@ MonoBehaviour:
   nextLevelButtonText: {fileID: 236115702}
   nextLevelMessage: {fileID: 1541836672}
   failedAtLevelText: {fileID: 1943944772}
+  timeToTransitionFromGameToMenu: 0.5
 --- !u!1 &1087749120
 GameObject:
   m_ObjectHideFlags: 0
