@@ -47,6 +47,7 @@ public class ScorePresenter : MonoBehaviour
     private void ScoreUISetup()
     {
         scoreBar.fillAmount = 0;
+        scoreText.text = "0";
         currentLevelText.text = "L: " + ServiceLocator.GetGameManager().CurrentLevel;
     }
 
